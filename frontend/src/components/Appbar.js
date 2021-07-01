@@ -16,9 +16,10 @@ import {
   Badge,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../actions/auth";
+import { load_items } from "../actions/shop";
 import {
   ShoppingCart,
   Brightness7,
@@ -29,6 +30,7 @@ import {
   SearchSharp,
 } from "@material-ui/icons";
 import { drawer_items } from "./DrawerItems";
+
 const useStyles = makeStyles((theme) => ({
   title: {
     marginLeft: 20,
@@ -49,16 +51,24 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Appbar = ({ isAuthenticated, logout, checked, onChange, cart }) => {
+const Appbar = ({
+  isAuthenticated,
+  logout,
+  checked,
+  onChange,
+  cart,
+  load_items,
+  history,
+}) => {
   const classes = useStyles();
   const authLinks = (
     <Link className={classes.navLink} onClick={logout}>
-      <Typography variant="button">Logout</Typography>
+      <Typography variant="button">خروج</Typography>
     </Link>
   );
-  const [drawerstate, setDrawerState] = useState({ open: false });
+  const [drawerstate, setDrawerState] = useState(false);
 
-  const toggleDrawer = (anchor, open) => (event) => {
+  const toggleDrawer = (event) => {
     if (
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
@@ -66,25 +76,60 @@ const Appbar = ({ isAuthenticated, logout, checked, onChange, cart }) => {
       return;
     }
 
-    setDrawerState({ ...drawerstate, [anchor]: open });
+    setDrawerState(!drawerstate);
   };
   const [expanded, setExpanded] = useState(false);
-
   const handleExpand = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-  const list = (anchor) => (
+  const [search, setSearch] = useState("");
+  const onTextChange = (e) => setSearch(e.target.value);
+
+  const handleDrawerLink = (title, type) => {
+    setDrawerState(!drawerstate);
+
+    const currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.delete("keyword");
+    type === "subcategory"
+      ? currentUrlParams.delete("category")
+      : currentUrlParams.delete("subcategory");
+
+    currentUrlParams.set("page", 1);
+    currentUrlParams.set(type, title);
+    if (window.location.pathname === "/") {
+      history.push("?" + currentUrlParams.toString());
+      type === "subcategory"
+        ? load_items(1, false, false, title)
+        : load_items(1, false, title, false);
+    } else {
+      window.location.replace("/?" + type + "=" + title);
+    }
+  };
+
+  const onSearch = (e) => {
+    e.preventDefault();
+    const currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.delete("category");
+    currentUrlParams.delete("subcategory");
+    currentUrlParams.set("page", 1);
+    currentUrlParams.set("keyword", search);
+    if (window.location.pathname === "/") {
+      history.push(
+        window.location.pathname + "?" + currentUrlParams.toString()
+      );
+      load_items(1, search, false, false);
+    } else {
+      window.location.replace("/?keyword=" + search);
+    }
+  };
+  const list = () => (
     <div
       className={classes.list}
       // onClick={toggleDrawer(anchor, false)}
       // onKeyDown={toggleDrawer(anchor, false)}
     >
       <Toolbar>
-        <Link
-          className={classes.title}
-          to="/"
-          onClick={toggleDrawer(anchor, false)}
-        >
+        <Link className={classes.title} to="/" onClick={toggleDrawer}>
           <Typography variant="h6" color="textPrimary">
             SAKAR
           </Typography>
@@ -104,11 +149,21 @@ const Appbar = ({ isAuthenticated, logout, checked, onChange, cart }) => {
           </AccordionSummary>
           <AccordionDetails>
             <List>
+              <ListItem
+                button
+                onClick={() => handleDrawerLink(drawer_item.title, "category")}
+              >
+                <ListItemText
+                  primary="همه موارد این دسته"
+                  style={{ textAlign: "right" }}
+                />
+              </ListItem>
               {drawer_item.sub.map((sub_item) => (
                 <ListItem
                   button
-                  key={sub_item.subcategory}
-                  onClick={toggleDrawer(anchor, false)}
+                  onClick={() =>
+                    handleDrawerLink(sub_item.title, "subcategory")
+                  }
                 >
                   <ListItemText
                     primary={sub_item.title}
@@ -127,18 +182,18 @@ const Appbar = ({ isAuthenticated, logout, checked, onChange, cart }) => {
       <AppBar position="sticky" color="inherit">
         <Toolbar>
           <div className={classes.rightIcons}>
-            <IconButton color="inherit" onClick={toggleDrawer("open", true)}>
+            <IconButton color="inherit" onClick={toggleDrawer}>
               <Menu />
             </IconButton>
 
             {isAuthenticated ? authLinks : ""}
           </div>
 
-          <Link className={classes.title} to="/">
+          <a className={classes.title} href="/">
             <Typography variant="h5" color="primary">
               SAKAR
             </Typography>
-          </Link>
+          </a>
           <IconButton color="inherit" onClick={onChange}>
             {checked ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
@@ -166,16 +221,19 @@ const Appbar = ({ isAuthenticated, logout, checked, onChange, cart }) => {
             </IconButton>
           </Link>
         </div>
-        <form noValidate autoComplete="off">
+        <form onSubmit={(e) => onSearch(e)}>
           <TextField
             style={{ marginTop: 5, width: "14rem" }}
             id="search"
-            label="جستجو"
+            placeholder="جستجو"
+            color="secondary"
             variant="outlined"
+            value={search}
+            onChange={(e) => onTextChange(e)}
             size="small"
             InputProps={{
               endAdornment: (
-                <IconButton color="inherit" size="small">
+                <IconButton color="inherit" size="small" type="submit">
                   <SearchSharp />
                 </IconButton>
               ),
@@ -188,10 +246,10 @@ const Appbar = ({ isAuthenticated, logout, checked, onChange, cart }) => {
       <Drawer
         // BackdropProps={{ invisible: true }}
         anchor={"left"}
-        open={drawerstate["open"]}
-        onClose={toggleDrawer("open", false)}
+        open={drawerstate}
+        onClose={toggleDrawer}
       >
-        {list("open")}
+        {list()}
       </Drawer>
     </>
   );
@@ -202,4 +260,6 @@ const mapStateToProps = (state) => ({
   cart: state.shop.cart,
 });
 
-export default connect(mapStateToProps, { logout })(Appbar);
+export default withRouter(
+  connect(mapStateToProps, { logout, load_items })(Appbar)
+);

@@ -1,33 +1,31 @@
+from django.core.paginator import Paginator
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from .serializers import \
-    ItemSerializer, \
-    ItemsSerializer, \
-    UserDetailSerializer, \
-    AddressSerializer, CartSerializer, OrderFullSerializer
-from .models import Item, Images, BillingAddress, OrderItem, Order
+from .serializers import ItemSerializer, ItemsSerializer, \
+    UserDetailSerializer, AddressSerializer, CartSerializer, \
+    OrderFullSerializer, SlideSerializer, BookmarkSerializer
+from .models import Item, Images, BillingAddress, OrderItem, Order, Slide, Bookmark, SubCategory, Category
 from collections import namedtuple
 from accounts.models import UserAccount
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
 
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def apiOverview(request):
-    api_urls = {
-        'list': '/item-list/',
-        'detail': 'item-detail/',
-    }
-    return Response(api_urls)
-
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def cart(request, pk):
     order = OrderItem.objects.filter(user=pk, ordered=False)
     serializer = CartSerializer(order, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def bookmark(request, pk):
+    order = Bookmark.objects.filter(user=pk)
+    serializer = BookmarkSerializer(order, many=True)
     return Response(serializer.data)
 
 
@@ -39,11 +37,37 @@ def addressList(request, pk):
     return Response(serializer.data)
 
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def itemList(request, pk):
+    keyword = request.data.get('keyword')
+    category = request.data.get('category')
+    subcategory = request.data.get('subcategory')
+    if keyword:
+        items = Item.objects.filter(title__contains=keyword)
+    elif subcategory:
+        sub = SubCategory.objects.get(title=subcategory)
+        items = Item.objects.filter(subcategory=sub.id)
+    elif category:
+        cat = Category.objects.get(title=category)
+        items = Item.objects.filter(category=cat.id)
+    else:
+        items = Item.objects.all()
+    itemperpage = 4
+    paginator = Paginator(items, itemperpage)
+    count = round(len(items)/itemperpage)
+    items = paginator.get_page(pk)
+
+    serializer = ItemsSerializer(items, many=True)
+    res = [{"count": count}] + [serializer.data]
+    return Response(res)
+
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def itemList(request):
-    items = Item.objects.all()
-    serializer = ItemsSerializer(items, many=True)
+def slide(request):
+    slides = Slide.objects.filter(is_active=True)
+    serializer = SlideSerializer(slides, many=True)
     return Response(serializer.data)
 
 
@@ -68,6 +92,7 @@ def itemCreate(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def userDetail(request, pk):
     user = UserAccount.objects.get(id=pk)
     serializer = UserDetailSerializer(user, many=False)
@@ -75,7 +100,7 @@ def userDetail(request, pk):
 
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
+@permission_classes([IsAuthenticated])
 def orderDetail(request, pk):
     order = Order.objects.get(user=pk)
     items = OrderItem.objects.filter(user=pk, ordered=False)

@@ -1,14 +1,25 @@
 from rest_framework import serializers
-from .models import Item, Images, BillingAddress, OrderItem, Order
+from .models import Item, Images, BillingAddress, OrderItem, Order, Slide, Bookmark
 from accounts .models import UserAccount
 
 
 class CartSerializer(serializers.ModelSerializer):
     item_title = serializers.ReadOnlyField(source='item.title')
     item_price = serializers.ReadOnlyField(source='item.price')
+    image = serializers.ImageField(source='item.image')
 
     class Meta:
         model = OrderItem
+        fields = '__all__'
+
+
+class BookmarkSerializer(serializers.ModelSerializer):
+    item_title = serializers.ReadOnlyField(source='item.title')
+    item_price = serializers.ReadOnlyField(source='item.price')
+    image = serializers.ImageField(source='item.image')
+
+    class Meta:
+        model = Bookmark
         fields = '__all__'
 
 
@@ -29,6 +40,12 @@ class UserDetailSerializer(serializers.ModelSerializer):
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Images
+        fields = '__all__'
+
+
+class SlideSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Slide
         fields = '__all__'
 
 

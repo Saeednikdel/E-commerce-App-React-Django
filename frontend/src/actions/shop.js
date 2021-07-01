@@ -17,32 +17,36 @@ import {
   REMOVE_FROM_CART_FAIL,
   REMOVE_ONE_FROM_CART_SUCCESS,
   REMOVE_ONE_FROM_CART_FAIL,
+  LOAD_BOOKMARK_FAIL,
+  LOAD_BOOKMARK_SUCCESS,
 } from "../actions/types";
 
-export const load_items = () => async (dispatch) => {
-  const config = {
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
+export const load_items =
+  (page, keyword, category, subcategory) => async (dispatch) => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    };
+    const body = JSON.stringify({ keyword, category, subcategory });
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/items-list/${page}/`,
+        body,
+        config
+      );
+
+      dispatch({
+        type: LOAD_ITEMS_SUCCESS,
+        payload: res.data,
+      });
+    } catch (err) {
+      dispatch({
+        type: LOAD_ITEMS_FAIL,
+      });
+    }
   };
-
-  try {
-    const res = await axios.get(
-      `${process.env.REACT_APP_API_URL}/api/items-list/`,
-      config
-    );
-
-    dispatch({
-      type: LOAD_ITEMS_SUCCESS,
-      payload: res.data,
-    });
-  } catch (err) {
-    dispatch({
-      type: LOAD_ITEMS_FAIL,
-    });
-  }
-};
 
 export const load_item = (itemId) => async (dispatch) => {
   const csrftoken = getCookie("csrftoken");
@@ -130,6 +134,38 @@ export const load_cart = (userId) => async (dispatch) => {
   } else {
     dispatch({
       type: LOAD_CART_FAIL,
+    });
+  }
+};
+
+export const load_bookmark = (userId) => async (dispatch) => {
+  if (localStorage.getItem("access")) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("access")}`,
+        Accept: "application/json",
+      },
+    };
+
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/bookmark/${userId}/`,
+        config
+      );
+
+      dispatch({
+        type: LOAD_BOOKMARK_SUCCESS,
+        payload: res.data,
+      });
+    } catch (err) {
+      dispatch({
+        type: LOAD_BOOKMARK_FAIL,
+      });
+    }
+  } else {
+    dispatch({
+      type: LOAD_BOOKMARK_FAIL,
     });
   }
 };

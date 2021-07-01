@@ -11,8 +11,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 function AppCarousel({ images }) {
   const classes = useStyles();
-  var items = images ? images : [{ image: placeholderImage }];
-  return (
+    const items = images ? images : [{image: placeholderImage}];
+    return (
     <div className={classes.pageContainer}>
       <Carousel swipe={true} stopAutoPlayOnHover={true}>
         {items.map((item, i) => (

@@ -16,6 +16,8 @@ import {
   REMOVE_FROM_CART_FAIL,
   REMOVE_ONE_FROM_CART_SUCCESS,
   REMOVE_ONE_FROM_CART_FAIL,
+  LOAD_BOOKMARK_FAIL,
+  LOAD_BOOKMARK_SUCCESS,
 } from "../actions/types";
 const initialState = {
   items: null,
@@ -51,6 +53,11 @@ export default function (state = initialState, action) {
         ...state,
         cart: payload,
       };
+    case LOAD_BOOKMARK_SUCCESS:
+      return {
+        ...state,
+        bookmarks : payload,
+      };
     case ADD_TO_CART_SUCCESS:
       return {
         ...state,
@@ -74,6 +81,7 @@ export default function (state = initialState, action) {
         user: null,
         address: null,
       };
+    case LOAD_BOOKMARK_FAIL:
     case REMOVE_ONE_FROM_CART_FAIL:
     case REMOVE_FROM_CART_FAIL:
     case ADD_TO_CART_FAIL:

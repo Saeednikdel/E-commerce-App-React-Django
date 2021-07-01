@@ -1,22 +1,18 @@
 import React, { useEffect } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Button,
+  Card,
+  CardActionArea,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Typography,
+  Grid,
+  makeStyles,
   ButtonGroup,
-  IconButton, CircularProgress,
+  Button,
+  CircularProgress,
 } from "@material-ui/core";
-import {
-  Remove,
-  DeleteOutline,
-  Add,
-  Visibility,
-  OpenInBrowser,
-} from "@material-ui/icons";
+import { Remove, DeleteOutline, Add } from "@material-ui/icons";
 import {
   load_cart,
   add_to_cart,
@@ -25,6 +21,16 @@ import {
 } from "../actions/shop";
 import Redirect from "react-router-dom/es/Redirect";
 import { connect } from "react-redux";
+
+const useStyles = makeStyles((theme) => ({
+  pageContainer: {
+    marginTop: `${theme.spacing(2)}px`,
+  },
+  cartTotal: {
+    marginTop: `${theme.spacing(2)}px`,
+    padding: `${theme.spacing(2)}px`,
+  },
+}));
 
 const Cart = ({
   load_cart,
@@ -44,6 +50,8 @@ const Cart = ({
       fetchData();
     }
   }, []);
+  const classes = useStyles();
+
   if (isAuthenticated === false) return <Redirect to="/login" />;
 
   const AddToCartHandle = (id) => {
@@ -57,80 +65,68 @@ const Cart = ({
   };
   return cart ? (
     <div>
-      <TableContainer>
-        <Table aria-label="cart">
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <IconButton disableRipple={true}>
-                  <Visibility />
-                </IconButton>
-              </TableCell>
-              <TableCell>کالا</TableCell>
-              <TableCell>قیمت</TableCell>
-              <TableCell>تعداد</TableCell>
-              <TableCell></TableCell>
-              <TableCell>قیمت کل</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {cart.map((cartitem) => (
-              <TableRow key={"address.id"}>
-                <TableCell>
-                  <IconButton
-                    href={`/detail/${cartitem.item}`}
-                    color="secondary"
+      <Grid container className={classes.pageContainer} spacing={2}>
+        {cart.map((cartitem) => (
+          <Grid item xs={6} sm={4} md={3}>
+            <Card>
+              <CardActionArea href={`/detail/${cartitem.item}`}>
+                <CardMedia
+                  component="img"
+                  height="150"
+                  image={cartitem.image}
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5">
+                    {cartitem.item_title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
                   >
-                    <OpenInBrowser />
-                  </IconButton>
-                </TableCell>
-                <TableCell>{cartitem.item_title}</TableCell>
-                <TableCell>{cartitem.item_price.toLocaleString()}</TableCell>
-                <TableCell>{cartitem.quantity}</TableCell>
-                <TableCell>
-                  <ButtonGroup size="small" color="secondary">
-                    <Button
-                      onClick={() => RemoveOneFromCartHandle(cartitem.item)}
-                    >
-                      <Remove />
-                    </Button>
-                    <Button onClick={() => RemoveFromCartHandle(cartitem.item)}>
-                      <DeleteOutline />
-                    </Button>
-                    <Button onClick={() => AddToCartHandle(cartitem.item)}>
-                      <Add />
-                    </Button>
-                  </ButtonGroup>
-                </TableCell>
-                <TableCell>
-                  {(cartitem.item_price * cartitem.quantity).toLocaleString()}
-                </TableCell>
-              </TableRow>
-            ))}
-            <TableRow>
-              <TableCell></TableCell>
-              <TableCell></TableCell>
-              <TableCell></TableCell>
-              <TableCell>
-                {cart.reduce((n, { quantity }) => n + quantity, 0)}
-              </TableCell>
-              <TableCell></TableCell>
-              <TableCell>
-                {cart
-                  .reduce(
-                    (n, { quantity, item_price }) => n + quantity * item_price,
-                    0
-                  )
-                  .toLocaleString()}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+                    قیمت واحد : {cartitem.item_price.toLocaleString()} تومان
+                  </Typography>
+                  <Typography>
+                    قیمت :
+                    {(cartitem.item_price * cartitem.quantity).toLocaleString()}
+                    تومان
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+              <CardActions>
+                <ButtonGroup size="small" color="secondary">
+                  <Button
+                    onClick={() => RemoveOneFromCartHandle(cartitem.item)}
+                  >
+                    {cartitem.quantity > 1 ? <Remove /> : <DeleteOutline />}
+                  </Button>
+                  <Button>{cartitem.quantity}</Button>
+                  <Button onClick={() => AddToCartHandle(cartitem.item)}>
+                    <Add />
+                  </Button>
+                </ButtonGroup>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+      <Card className={classes.cartTotal}>
+        <Typography variant="h5">
+          تعداد کل :{cart.reduce((n, { quantity }) => n + quantity, 0)}
+        </Typography>
+        <Typography variant="h5">
+          قیمت کل سبد :
+          {cart
+            .reduce(
+              (n, { quantity, item_price }) => n + quantity * item_price,
+              0
+            )
+            .toLocaleString()}
+        </Typography>
+      </Card>
     </div>
   ) : (
-        <CircularProgress color="secondary"/>
-
+    <CircularProgress color="secondary" />
   );
 };
 

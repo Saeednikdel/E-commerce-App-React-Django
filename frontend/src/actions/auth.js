@@ -1,5 +1,5 @@
 import axios from "axios";
-import { load_cart, logout2 } from "./shop";
+import { load_cart, logout2, load_bookmark } from "./shop";
 import {
   SIGNUP_SUCCESS,
   SIGNUP_FAIL,
@@ -82,7 +82,9 @@ export const load_user = () => async (dispatch) => {
         type: USER_LOADED_SUCCESS,
         payload: res.data,
       });
-      dispatch(load_cart(res.data.id))
+      dispatch(load_cart(res.data.id));
+      dispatch(load_bookmark(res.data.id));
+
     } catch (err) {
       dispatch({
         type: USER_LOADED_FAIL,
@@ -241,7 +243,7 @@ export const reset_password_confirm =
 
 export const logout = () => (dispatch) => {
   dispatch({ type: LOGOUT });
-  dispatch(logout2({type : LOGOUT}));
+  dispatch(logout2({ type: LOGOUT }));
 };
 
 function getCookie(name) {
