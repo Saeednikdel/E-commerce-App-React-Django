@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { login } from "../actions/auth";
-import { TextField, Button, makeStyles, Typography } from "@material-ui/core";
+import { login, resetState } from "../actions/auth";
+import {
+  TextField,
+  Button,
+  makeStyles,
+  Typography,
+  LinearProgress,
+} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   navLink: {
@@ -11,14 +17,28 @@ const useStyles = makeStyles((theme) => ({
     margin: 5,
   },
 }));
-const Login = ({ login, isAuthenticated }) => {
+const Login = ({
+  login,
+  isAuthenticated,
+  requestFail,
+  resetState,
+}) => {
   const classes = useStyles();
+  const [requestSent, setRequestSent] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
-
+  useEffect(() => {
+    if (requestFail) {
+      setRequestSent(false);
+      resetState();
+    }
+    if (isAuthenticated) {
+      resetState();
+    }
+  }, [requestFail, isAuthenticated]);
   const { email, password } = formData;
 
   const onChange = (e) =>
@@ -26,7 +46,7 @@ const Login = ({ login, isAuthenticated }) => {
 
   const onSubmit = (e) => {
     e.preventDefault();
-
+    setRequestSent(true)
     login(email, password);
   };
 
@@ -34,6 +54,8 @@ const Login = ({ login, isAuthenticated }) => {
 
   return (
     <div style={{ textAlign: "center" }}>
+      {requestSent ? <LinearProgress /> : ""}
+
       <Typography variant="h5">ورود</Typography>
       <form onSubmit={(e) => onSubmit(e)}>
         <div>
@@ -84,6 +106,8 @@ const Login = ({ login, isAuthenticated }) => {
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
+  requestSuccess: state.auth.requestSuccess,
+  requestFail: state.auth.requestFail,
 });
 
-export default connect(mapStateToProps, { login })(Login);
+export default connect(mapStateToProps, { login, resetState })(Login);

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Item, Images, BillingAddress, OrderItem, Order, Slide, Bookmark
+from .models import Item, Images, Address, OrderItem, Order, Slide, Bookmark, Comment
 from accounts .models import UserAccount
 
 
@@ -13,6 +13,20 @@ class CartSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class OrderSerializer(serializers.ModelSerializer):
+    address = serializers.ReadOnlyField(source='shipping_address.address')
+
+    class Meta:
+        model = Order
+        fields = ('id', 'ordered', 'ordered_date',
+                  'being_delivered', 'received', 'address')
+
+
+class OrderFullSerializer(serializers.Serializer):
+    order = OrderSerializer(many=False)
+    items = CartSerializer(many=True)
+
+
 class BookmarkSerializer(serializers.ModelSerializer):
     item_title = serializers.ReadOnlyField(source='item.title')
     item_price = serializers.ReadOnlyField(source='item.price')
@@ -23,24 +37,32 @@ class BookmarkSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
+    user_name = serializers.ReadOnlyField(source='user.name')
+
     class Meta:
-        model = Order
-        fields = '__all__'
+        model = Comment
+        fields = ('user_name', 'star', 'title', 'description', 'date')
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserAccount
         fields = ('id', 'email', 'name', 'account_no',
-                  'phone_no', 'birth_date', 'id_code',
-                  'is_seller', 'is_staff', 'join_date')
+                  'phone_no', 'birth_date', 'id_code')
+
+
+class UserSetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserAccount
+        fields = ('id', 'name', 'account_no',
+                  'phone_no', 'birth_date', 'id_code')
 
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Images
-        fields = '__all__'
+        fields = ('image',)
 
 
 class SlideSerializer(serializers.ModelSerializer):
@@ -54,20 +76,24 @@ class ItemsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Item
-        fields = '__all__'
+        fields = ('id', 'user_name', 'title', 'price', 'star', 'discount_price', 'image')
+
+
+class Item1Serializer(serializers.ModelSerializer):
+    user_name = serializers.ReadOnlyField(source='user.name')
+
+    class Meta:
+        model = Item
+        fields = ('id', 'user_name', 'title', 'price', 'star', 'discount_price', 'label', 'stock_no',
+                  'description_short', 'description_long', )
 
 
 class ItemSerializer(serializers.Serializer):
-    item = ItemsSerializer(many=False)
+    item = Item1Serializer(many=False)
     images = ImageSerializer(many=True)
-
-
-class OrderFullSerializer(serializers.Serializer):
-    order = OrderSerializer(many=False)
-    items = CartSerializer(many=True)
 
 
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
-        model = BillingAddress
+        model = Address
         fields = '__all__'

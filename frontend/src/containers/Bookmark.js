@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
-import { load_bookmark } from "../actions/shop";
+import { load_bookmark } from "../actions/auth";
+import { bookmark } from "../actions/shop";
 import {
   Card,
   CardActionArea,
@@ -19,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
     margin: `${theme.spacing(2)}px`,
   },
 }));
-const Favorites = ({ load_bookmark, bookmarks }) => {
+const Bookmark = ({ load_bookmark, bookmarkList, bookmark }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,20 +32,29 @@ const Favorites = ({ load_bookmark, bookmarks }) => {
     }
   }, []);
   const classes = useStyles();
-
-  return bookmarks ? (
-    <div>
-      <Grid container className={classes.pageContainer} spacing={2}>
-        {bookmarks.map((bookmark) => (
-          <Grid item xs={6} sm={4} md={3}>
-            <Card>
-              <CardActionArea href={`/detail/${bookmark.item}`}>
+  const BookmarkHandle = (id) => {
+    bookmark(id);
+  };
+  return bookmarkList ? (
+    <div className={classes.pageContainer}>
+      <Grid container spacing={1}>
+        {bookmarkList.map((bookmark) => (
+          <Grid item xs={12} sm={6} md={4}>
+            <Card variant="outlined">
+              <CardActionArea
+                style={{ display: "flex" }}
+                href={`/detail/${bookmark.item}`}
+              >
                 <CardMedia
                   component="img"
-                  height="150"
+                  style={{ width: 140, height:140 }}
                   image={bookmark.image}
                 />
-                <CardContent>
+                <CardContent
+                  style={{
+                    flex: "1 0 auto",
+                  }}
+                >
                   <Typography gutterBottom variant="h5">
                     {bookmark.item_title}
                   </Typography>
@@ -58,7 +68,11 @@ const Favorites = ({ load_bookmark, bookmarks }) => {
                 </CardContent>
               </CardActionArea>
               <CardActions>
-                <Button variant="outlined" color="secondary">
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={() => BookmarkHandle(bookmark.item)}
+                >
                   <DeleteOutline />
                 </Button>
               </CardActions>
@@ -72,6 +86,6 @@ const Favorites = ({ load_bookmark, bookmarks }) => {
   );
 };
 const mapStateToProps = (state) => ({
-  bookmarks: state.shop.bookmarks,
+  bookmarkList: state.auth.bookmarks,
 });
-export default connect(mapStateToProps, { load_bookmark })(Favorites);
+export default connect(mapStateToProps, { load_bookmark, bookmark })(Bookmark);

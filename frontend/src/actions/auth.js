@@ -1,5 +1,5 @@
 import axios from "axios";
-import { load_cart, logout2, load_bookmark } from "./shop";
+import { load_cart, logout2 ,load_comments} from "./shop";
 import {
   SIGNUP_SUCCESS,
   SIGNUP_FAIL,
@@ -11,13 +11,270 @@ import {
   RESET_PASSWORD_FAIL,
   RESET_PASSWORD_CONFIRM_SUCCESS,
   RESET_PASSWORD_CONFIRM_FAIL,
+  SET_EMAIL_SUCCESS,
+  SET_EMAIL_FAIL,
+  SET_PASSWORD_SUCCESS,
+  SET_PASSWORD_FAIL,
   LOGOUT,
   USER_LOADED_SUCCESS,
   USER_LOADED_FAIL,
   AUTHENTICATED_FAIL,
   AUTHENTICATED_SUCCESS,
+  RESET_STATE,
+  LOAD_USER_DETAIL_SUCCESS,
+  LOAD_USER_DETAIL_FAIL,
+  SET_USER_DETAIL_FAIL,
+  SET_USER_DETAIL_SUCCESS,
+  LOAD_ADDRESS_SUCCESS,
+  LOAD_ADDRESS_FAIL,
+  LOAD_BOOKMARK_FAIL,
+  LOAD_BOOKMARK_SUCCESS,
+  SET_ADDRESS_SUCCESS,
+  SET_ADDRESS_FAIL,
+  REMOVE_ADDRESS_SUCCESS,
+  REMOVE_ADDRESS_FAIL,
+  SET_COMMENTS_FAIL,
+  SET_COMMENTS_SUCCESS,
 } from "./types";
+export const comment = (item, star, title, description) => async (dispatch) => {
+  if (localStorage.getItem("access")) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("access")}`,
+        Accept: "application/json",
+      },
+    };
+    const user = localStorage.getItem("id");
+    const body = JSON.stringify({ user, item, star, title, description });
 
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/comment/`,
+        body,
+        config
+      );
+
+      dispatch({
+        type: SET_COMMENTS_SUCCESS,
+      });
+      dispatch(load_comments(item, 1));
+    } catch (err) {
+      dispatch({
+        type: SET_COMMENTS_FAIL,
+      });
+    }
+  }
+};
+export const load_user_detail = () => async (dispatch) => {
+  if (localStorage.getItem("access")) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("access")}`,
+        Accept: "application/json",
+      },
+    };
+    const user = localStorage.getItem("id");
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/user-detail/${user}/`,
+        config
+      );
+
+      dispatch({
+        type: LOAD_USER_DETAIL_SUCCESS,
+        payload: res.data,
+      });
+    } catch (err) {
+      dispatch({
+        type: LOAD_USER_DETAIL_FAIL,
+      });
+    }
+  } else {
+    dispatch({
+      type: LOAD_USER_DETAIL_FAIL,
+    });
+  }
+};
+
+export const set_user_detail =
+  (id, name, account_no, phone_no, birth_date, id_code) => async (dispatch) => {
+    if (localStorage.getItem("access")) {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${localStorage.getItem("access")}`,
+          Accept: "application/json",
+        },
+      };
+      const body = JSON.stringify({
+        id,
+        name,
+        account_no,
+        phone_no,
+        birth_date,
+        id_code,
+      });
+
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/user-set/`,
+          body,
+          config
+        );
+
+        dispatch({
+          type: SET_USER_DETAIL_SUCCESS,
+          payload: res.data,
+        });
+        dispatch(load_user_detail());
+      } catch (err) {
+        dispatch({
+          type: SET_USER_DETAIL_FAIL,
+        });
+      }
+    } else {
+      dispatch({
+        type: SET_USER_DETAIL_FAIL,
+      });
+    }
+  };
+
+export const load_bookmark = () => async (dispatch) => {
+  if (localStorage.getItem("access")) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("access")}`,
+        Accept: "application/json",
+      },
+    };
+    const userId = localStorage.getItem("id");
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/bookmark-list/${userId}/`,
+        config
+      );
+
+      dispatch({
+        type: LOAD_BOOKMARK_SUCCESS,
+        payload: res.data,
+      });
+    } catch (err) {
+      dispatch({
+        type: LOAD_BOOKMARK_FAIL,
+      });
+    }
+  } else {
+    dispatch({
+      type: LOAD_BOOKMARK_FAIL,
+    });
+  }
+};
+
+export const load_address = () => async (dispatch) => {
+  if (localStorage.getItem("access")) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("access")}`,
+        Accept: "application/json",
+      },
+    };
+    const user = localStorage.getItem("id");
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/address-list/${user}/`,
+        config
+      );
+
+      dispatch({
+        type: LOAD_ADDRESS_SUCCESS,
+        payload: res.data,
+      });
+    } catch (err) {
+      dispatch({
+        type: LOAD_ADDRESS_FAIL,
+      });
+    }
+  } else {
+    dispatch({
+      type: LOAD_ADDRESS_FAIL,
+    });
+  }
+};
+
+export const set_address =
+  (id, name, address, zip_code, phone) => async (dispatch) => {
+    if (localStorage.getItem("access")) {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${localStorage.getItem("access")}`,
+          Accept: "application/json",
+        },
+      };
+      const user = localStorage.getItem("id");
+      const body = JSON.stringify({
+        id,
+        name,
+        address,
+        zip_code,
+        phone,
+        user,
+      });
+
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/address/`,
+          body,
+          config
+        );
+        dispatch({
+          type: SET_ADDRESS_SUCCESS,
+        });
+        dispatch(load_address());
+      } catch (error) {
+        dispatch({
+          type: SET_ADDRESS_FAIL,
+        });
+      }
+    }
+  };
+export const remove_address = (id) => async (dispatch) => {
+  if (localStorage.getItem("access")) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("access")}`,
+        Accept: "application/json",
+      },
+    };
+    const user = localStorage.getItem("id");
+    const body = JSON.stringify({
+      id,
+      user,
+      delete: true,
+    });
+
+    try {
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/api/address/`,
+        body,
+        config
+      );
+      dispatch({
+        type: REMOVE_ADDRESS_SUCCESS,
+      });
+      dispatch(load_address());
+    } catch (error) {
+      dispatch({
+        type: REMOVE_ADDRESS_FAIL,
+      });
+    }
+  }
+};
 export const checkAuthenticated = () => async (dispatch) => {
   if (typeof window == "undefined") {
     dispatch({
@@ -50,7 +307,7 @@ export const checkAuthenticated = () => async (dispatch) => {
           type: AUTHENTICATED_FAIL,
         });
       }
-    } catch (err) {
+    } catch (error) {
       dispatch({
         type: AUTHENTICATED_FAIL,
       });
@@ -82,10 +339,9 @@ export const load_user = () => async (dispatch) => {
         type: USER_LOADED_SUCCESS,
         payload: res.data,
       });
-      dispatch(load_cart(res.data.id));
-      dispatch(load_bookmark(res.data.id));
-
-    } catch (err) {
+      dispatch(load_cart());
+      dispatch(load_bookmark());
+    } catch (error) {
       dispatch({
         type: USER_LOADED_FAIL,
       });
@@ -119,7 +375,7 @@ export const login = (email, password) => async (dispatch) => {
     });
 
     dispatch(load_user());
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: LOGIN_FAIL,
     });
@@ -151,8 +407,10 @@ export const signup =
         type: SIGNUP_SUCCESS,
         payload: res.data,
       });
-    } catch (err) {
-      console.log("response error", err.response.data);
+    } catch (error) {
+      // console.log("request.status", error.request.status);
+      // console.log("request.response", error.request.response);
+      // console.log("message", error.message);
       dispatch({
         type: SIGNUP_FAIL,
       });
@@ -179,7 +437,7 @@ export const verify = (uid, token) => async (dispatch) => {
       type: ACTIVATION_SUCCESS,
       payload: res.data,
     });
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: ACTIVATION_FAIL,
     });
@@ -206,7 +464,7 @@ export const reset_password = (email) => async (dispatch) => {
       type: RESET_PASSWORD_SUCCESS,
       payload: res.data,
     });
-  } catch (err) {
+  } catch (error) {
     dispatch({
       type: RESET_PASSWORD_FAIL,
     });
@@ -234,18 +492,86 @@ export const reset_password_confirm =
         type: RESET_PASSWORD_CONFIRM_SUCCESS,
         payload: res.data,
       });
-    } catch (err) {
+    } catch (error) {
       dispatch({
         type: RESET_PASSWORD_CONFIRM_FAIL,
       });
     }
   };
+export const set_email =
+  (new_email, re_new_email, current_password) => async (dispatch) => {
+    if (localStorage.getItem("access")) {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${localStorage.getItem("access")}`,
+          Accept: "application/json",
+        },
+      };
 
+      const body = JSON.stringify({
+        new_email,
+        re_new_email,
+        current_password,
+      });
+
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_URL}/auth/users/set_email/`,
+          body,
+          config
+        );
+        dispatch({
+          type: SET_EMAIL_SUCCESS,
+        });
+        dispatch(load_user_detail());
+      } catch (error) {
+        dispatch({
+          type: SET_EMAIL_FAIL,
+        });
+      }
+    }
+  };
+export const set_password =
+  (new_password, re_new_password, current_password) => async (dispatch) => {
+    if (localStorage.getItem("access")) {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${localStorage.getItem("access")}`,
+          Accept: "application/json",
+        },
+      };
+
+      const body = JSON.stringify({
+        new_password,
+        re_new_password,
+        current_password,
+      });
+
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_URL}/auth/users/set_password/`,
+          body,
+          config
+        );
+        dispatch({
+          type: SET_PASSWORD_SUCCESS,
+        });
+      } catch (error) {
+        dispatch({
+          type: SET_PASSWORD_FAIL,
+        });
+      }
+    }
+  };
 export const logout = () => (dispatch) => {
   dispatch({ type: LOGOUT });
   dispatch(logout2({ type: LOGOUT }));
 };
-
+export const resetState = () => (dispatch) => {
+  dispatch({ type: RESET_STATE });
+};
 function getCookie(name) {
   var cookieValue = null;
   if (document.cookie && document.cookie !== "") {

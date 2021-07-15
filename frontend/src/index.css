@@ -1,0 +1,6 @@
+@font-face {
+  font-family: "Vazir";
+  src: local("Vazir"), url("./font/Vazir-Regular-FD-WOL.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}

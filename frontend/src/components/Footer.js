@@ -20,7 +20,7 @@ function Footer() {
     <>
       <div className={classes.container}>
         <Divider />
-        <Typography variant="h6"> this is fotter</Typography>
+        <Typography variant="h6">فوتر</Typography>
       </div>
     </>
   );

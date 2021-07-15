@@ -6,7 +6,7 @@ import UserDetail from "./UserDetail";
 import OrderList from "./OrderList";
 import Messages from "./Messages";
 import Addresses from "./Addresses";
-import Favorites from "./Favorites";
+import Bookmark from "./Bookmark";
 import { NavLink } from "react-router-dom";
 
 const Profile = ({ isAuthenticated, match }) => {
@@ -35,8 +35,8 @@ const Profile = ({ isAuthenticated, match }) => {
     },
     {
       label: "پسندیده",
-      value: "favorites",
-      to: "/profile/favorites",
+      value: "bookmark",
+      to: "/profile/bookmark",
     },
   ];
   return (
@@ -51,7 +51,7 @@ const Profile = ({ isAuthenticated, match }) => {
           />
         ))}
       </Tabs>
-      <Card>
+      <Card variant="outlined">
         <ProfileComponent value={tab} />
       </Card>
     </div>
@@ -68,8 +68,8 @@ function ProfileComponent({ value }) {
       return <Messages />;
     case "addres-list":
       return <Addresses />;
-    case "favorites":
-      return <Favorites />;
+    case "bookmark":
+      return <Bookmark />;
     default:
       return <h1>error</h1>;
   }

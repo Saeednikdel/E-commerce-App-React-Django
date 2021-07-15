@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { reset_password_confirm } from "../actions/auth";
-import { TextField, Button } from "@material-ui/core";
+import { reset_password_confirm, resetState } from "../actions/auth";
+import { TextField, Button, LinearProgress } from "@material-ui/core";
 
-const ResetPasswordConfirm = (props) => {
+const ResetPasswordConfirm = ({
+  requestSuccess,
+  reset_password_confirm,
+  match,
+  resetState,
+  requestFail,
+}) => {
   const [requestSent, setRequestSent] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -13,23 +19,30 @@ const ResetPasswordConfirm = (props) => {
   });
 
   const { new_password, re_new_password } = formData;
-
+  useEffect(() => {
+    if (requestFail) {
+      setRequestSent(false);
+      resetState();
+    }
+    if (requestSuccess) {
+      resetState();
+    }
+  }, [requestFail, requestSuccess]);
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const onSubmit = (e) => {
     e.preventDefault();
+    const uid = match.params.uid;
+    const token = match.params.token;
 
-    const uid = props.match.params.uid;
-    const token = props.match.params.token;
-
-    props.reset_password_confirm(uid, token, new_password, re_new_password);
+    reset_password_confirm(uid, token, new_password, re_new_password);
     setRequestSent(true);
   };
-
-  if (requestSent) return <Redirect to="/" />;
+  if (requestSent === requestSuccess) return <Redirect to="/" />;
   return (
     <div style={{ textAlign: "center" }}>
+      {requestSent ? <LinearProgress /> : ""}
       <form onSubmit={(e) => onSubmit(e)}>
         <div>
           <TextField
@@ -66,4 +79,10 @@ const ResetPasswordConfirm = (props) => {
   );
 };
 
-export default connect(null, { reset_password_confirm })(ResetPasswordConfirm);
+const mapStateToProps = (state) => ({
+  requestSuccess: state.auth.requestSuccess,
+  requestFail: state.auth.requestFail,
+});
+export default connect(mapStateToProps, { reset_password_confirm, resetState })(
+  ResetPasswordConfirm
+);

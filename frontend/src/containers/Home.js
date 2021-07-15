@@ -16,6 +16,8 @@ import Notification from "../components/Notification";
 import DialogAlert from "../components/DialogAlert";
 import { connect } from "react-redux";
 import { load_items, add_to_cart } from "../actions/shop";
+import { NavLink } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   pageContainer: {
@@ -39,30 +41,28 @@ const Home = ({ items, load_items, add_to_cart, isAuthenticated, history }) => {
     actionUrl: "",
     actionText: "",
   });
-  const keyword = getQueryVariable("keyword");
-  const category = getQueryVariable("category");
-  const subcategory = getQueryVariable("subcategory");
-
+  const { search } = useLocation();
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        await load_items(page, keyword, category, subcategory);
-      } catch (err) {}
-    };
-
+    if (parseInt(getQueryVariable("page")) !== page) setPage(1);
     fetchData();
-  }, []);
+  }, [search]);
+
+  const fetchData = async () => {
+    try {
+      await load_items(
+        getQueryVariable("page"),
+        getQueryVariable("keyword"),
+        getQueryVariable("category"),
+        getQueryVariable("subcategory")
+      );
+    } catch (err) {}
+  };
+
   const handleChange = (event, value) => {
     setPage(value);
     const currentUrlParams = new URLSearchParams(window.location.search);
-    ///currentUrlParams.delete('category')
     currentUrlParams.set("page", value);
     history.push(window.location.pathname + "?" + currentUrlParams.toString());
-
-    const keyword = getQueryVariable("keyword");
-    const category = getQueryVariable("category");
-    const subcategory = getQueryVariable("subcategory");
-    load_items(value, keyword, category, subcategory);
   };
 
   const AddToCartHandle = (id) => {
@@ -85,30 +85,44 @@ const Home = ({ items, load_items, add_to_cart, isAuthenticated, history }) => {
   };
   return (
     <div>
-      <Grid container className={classes.pageContainer} spacing={2}>
+      <Grid container className={classes.pageContainer} spacing={1}>
         {items ? (
           items[1].map((item) => (
-            <Grid item xs={6} sm={4} md={3}>
+            <Grid item xs={12} sm={6} md={4}>
               <Card>
-                <CardActionArea href={`/detail/${item.id}`}>
-                  <CardMedia component="img" image={item.image} height="150" />
-                  <CardContent>
-                    <Typography gutterBottom variant="h5">
+                <CardActionArea
+                  style={{ display: "flex" }}
+                  component={NavLink}
+                  to={`/detail/${item.id}`}
+                >
+                  <CardMedia
+                    component="img"
+                    image={item.image}
+                    style={{ width: 150, height: 150 }}
+                  />
+                  <CardContent
+                    style={{
+                      flex: "1 0 auto",
+                    }}
+                  >
+                    <Typography variant="h6" gutterBottom>
                       {item.title}
                     </Typography>
+                    <Typography variant="body1" component="p" gutterBottom>
+                      {item.price} تومان
+                    </Typography>
+                    <Typography color="error" variant="body1" gutterBottom>
+                      {item.discount_price} % تخفیف
+                    </Typography>
                     <Typography
-                      variant="body2"
                       color="textSecondary"
-                      component="p"
+                      variant="subtitle2"
+                      gutterBottom
                     >
-                      {item.price}
+                      فروشنده:{item.user_name}
                     </Typography>
-                    <Typography color="error" variant="body2">
-                      {item.discount_price}
-                    </Typography>
-                    <Typography>فروشنده :{item.user_name}</Typography>
 
-                    <Rating name="read-only" value={1} readOnly />
+                    <Rating name="read-only" value={item.star} readOnly />
                   </CardContent>
                 </CardActionArea>
                 <CardActions>

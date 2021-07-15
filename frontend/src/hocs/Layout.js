@@ -30,6 +30,9 @@ const Layout = (props) => {
   const palletType = darkState ? "dark" : "light";
 
   const darkTheme = createMuiTheme({
+    typography: {
+      fontFamily: "Vazir",
+    },
     direction: "rtl",
     palette: {
       type: palletType,

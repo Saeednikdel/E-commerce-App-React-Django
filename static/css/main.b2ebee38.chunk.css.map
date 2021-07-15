@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack://src/index.css"],"names":[],"mappings":"AAAA,WACE,mBAAoB,CACpB,0FAA8E,CAC9E,eAAmB,CACnB,iBACF","file":"main.b2ebee38.chunk.css","sourcesContent":["@font-face {\n  font-family: \"Vazir\";\n  src: local(\"Vazir\"), url(\"./font/Vazir-Regular-FD-WOL.ttf\") format(\"truetype\");\n  font-weight: normal;\n  font-style: normal;\n}\n"]}

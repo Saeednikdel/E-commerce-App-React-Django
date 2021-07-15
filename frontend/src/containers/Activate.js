@@ -1,31 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { verify } from "../actions/auth";
-import { Button, Typography } from "@material-ui/core";
+import { verify, resetState } from "../actions/auth";
+import { Button, Typography, LinearProgress } from "@material-ui/core";
 
-const Activate = (props) => {
-  const [verified, setVerified] = useState(false);
-
+const Activate = ({
+  requestSuccess,
+  verify,
+  match,
+  resetState,
+  requestFail,
+}) => {
+  const [requestSent, setRequestSent] = useState(false);
+  useEffect(() => {
+    if (requestFail) {
+      setRequestSent(false);
+      resetState();
+    }
+    if (requestSuccess) {
+      resetState();
+    }
+  }, [requestFail, requestSuccess]);
   const verify_account = (e) => {
-    const uid = props.match.params.uid;
-    const token = props.match.params.token;
-
-    props.verify(uid, token);
-    setVerified(true);
+    const uid = match.params.uid;
+    const token = match.params.token;
+    verify(uid, token);
+    setRequestSent(true);
   };
+  if (requestSent === requestSuccess) return <Redirect to="/" />;
 
-  if (verified) return <Redirect to="/" />;
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        marginTop: "200px",
-      }}
-    >
+    <div style={{ textAlign: "center" }}>
+      {requestSent ? <LinearProgress /> : ""}
       <Typography variant="h5">تایید ایمیل</Typography>
       <Button
         style={{ margin: 20 }}
@@ -40,5 +46,8 @@ const Activate = (props) => {
     </div>
   );
 };
-
-export default connect(null, { verify })(Activate);
+const mapStateToProps = (state) => ({
+  requestSuccess: state.auth.requestSuccess,
+  requestFail: state.auth.requestFail,
+});
+export default connect(mapStateToProps, { verify, resetState })(Activate);

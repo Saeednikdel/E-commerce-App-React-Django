@@ -3,10 +3,6 @@ import {
   LOAD_ITEMS_FAIL,
   LOAD_ITEM_SUCCESS,
   LOAD_ITEM_FAIL,
-  LOAD_USER_DETAIL_FAIL,
-  LOAD_USER_DETAIL_SUCCESS,
-  LOAD_ADDRESS_SUCCESS,
-  LOAD_ADDRESS_FAIL,
   LOAD_CART_SUCCESS,
   LOAD_CART_FAIL,
   LOGOUT,
@@ -16,8 +12,11 @@ import {
   REMOVE_FROM_CART_FAIL,
   REMOVE_ONE_FROM_CART_SUCCESS,
   REMOVE_ONE_FROM_CART_FAIL,
-  LOAD_BOOKMARK_FAIL,
-  LOAD_BOOKMARK_SUCCESS,
+  BOOKMARK_SUCCESS,
+  BOOKMARK_FAIL,
+  LOAD_COMMENTS_SUCCESS,
+  LOAD_COMMENTS_FAIL,
+
 } from "../actions/types";
 const initialState = {
   items: null,
@@ -38,25 +37,17 @@ export default function (state = initialState, action) {
         item: payload.item,
         images: payload.images,
       };
-    case LOAD_USER_DETAIL_SUCCESS:
+    case LOAD_COMMENTS_SUCCESS:
       return {
         ...state,
-        user: payload,
+        comments: payload,
       };
-    case LOAD_ADDRESS_SUCCESS:
-      return {
-        ...state,
-        address: payload,
-      };
+
     case LOAD_CART_SUCCESS:
       return {
         ...state,
-        cart: payload,
-      };
-    case LOAD_BOOKMARK_SUCCESS:
-      return {
-        ...state,
-        bookmarks : payload,
+        order: payload.order,
+        cart: payload.items,
       };
     case ADD_TO_CART_SUCCESS:
       return {
@@ -81,13 +72,12 @@ export default function (state = initialState, action) {
         user: null,
         address: null,
       };
-    case LOAD_BOOKMARK_FAIL:
+    case BOOKMARK_SUCCESS:
+    case BOOKMARK_FAIL:
     case REMOVE_ONE_FROM_CART_FAIL:
     case REMOVE_FROM_CART_FAIL:
     case ADD_TO_CART_FAIL:
     case LOAD_CART_FAIL:
-    case LOAD_ADDRESS_FAIL:
-    case LOAD_USER_DETAIL_FAIL:
     case LOAD_ITEMS_FAIL:
     case LOAD_ITEM_FAIL:
     default:

@@ -12,25 +12,24 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  ListItemText,
   Badge,
 } from "@material-ui/core";
 import React, { useState } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link, NavLink, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../actions/auth";
 import { load_items } from "../actions/shop";
 import {
-  ShoppingCart,
+  ShoppingCartOutlined,
   Brightness7,
   Brightness4,
-  AccountCircle,
+  PermIdentityRounded,
   Menu,
   ExpandMore,
   SearchSharp,
 } from "@material-ui/icons";
 import { drawer_items } from "./DrawerItems";
-
+import logo from "../sk.svg";
 const useStyles = makeStyles((theme) => ({
   title: {
     marginLeft: 20,
@@ -43,8 +42,14 @@ const useStyles = makeStyles((theme) => ({
     color: "inherit",
     // margin: 5,
   },
+  exit: {
+    textDecoration: "none",
+    color: "inherit",
+    marginTop: 10,
+    marginRight: 20,
+  },
   list: {
-    width: 250,
+    width: 280,
   },
   fullList: {
     width: "auto",
@@ -62,10 +67,16 @@ const Appbar = ({
 }) => {
   const classes = useStyles();
   const authLinks = (
-    <Link className={classes.navLink} onClick={logout}>
-      <Typography variant="button">خروج</Typography>
-    </Link>
+    <Toolbar>
+      <Link className={classes.exit} onClick={() => logOut()}>
+        <Typography variant="body1">خروج</Typography>
+      </Link>
+    </Toolbar>
   );
+  const logOut = () => {
+    logout();
+    setDrawerState(!drawerstate);
+  };
   const [drawerstate, setDrawerState] = useState(false);
 
   const toggleDrawer = (event) => {
@@ -85,27 +96,6 @@ const Appbar = ({
   const [search, setSearch] = useState("");
   const onTextChange = (e) => setSearch(e.target.value);
 
-  const handleDrawerLink = (title, type) => {
-    setDrawerState(!drawerstate);
-
-    const currentUrlParams = new URLSearchParams(window.location.search);
-    currentUrlParams.delete("keyword");
-    type === "subcategory"
-      ? currentUrlParams.delete("category")
-      : currentUrlParams.delete("subcategory");
-
-    currentUrlParams.set("page", 1);
-    currentUrlParams.set(type, title);
-    if (window.location.pathname === "/") {
-      history.push("?" + currentUrlParams.toString());
-      type === "subcategory"
-        ? load_items(1, false, false, title)
-        : load_items(1, false, title, false);
-    } else {
-      window.location.replace("/?" + type + "=" + title);
-    }
-  };
-
   const onSearch = (e) => {
     e.preventDefault();
     const currentUrlParams = new URLSearchParams(window.location.search);
@@ -117,17 +107,13 @@ const Appbar = ({
       history.push(
         window.location.pathname + "?" + currentUrlParams.toString()
       );
-      load_items(1, search, false, false);
+      // load_items(1, search, false, false);
     } else {
       window.location.replace("/?keyword=" + search);
     }
   };
   const list = () => (
-    <div
-      className={classes.list}
-      // onClick={toggleDrawer(anchor, false)}
-      // onKeyDown={toggleDrawer(anchor, false)}
-    >
+    <div className={classes.list}>
       <Toolbar>
         <Link className={classes.title} to="/" onClick={toggleDrawer}>
           <Typography variant="h6" color="textPrimary">
@@ -149,32 +135,31 @@ const Appbar = ({
           </AccordionSummary>
           <AccordionDetails>
             <List>
-              <ListItem
-                button
-                onClick={() => handleDrawerLink(drawer_item.title, "category")}
-              >
-                <ListItemText
-                  primary="همه موارد این دسته"
-                  style={{ textAlign: "right" }}
-                />
+              <ListItem>
+                <Link
+                  onClick={toggleDrawer}
+                  className={classes.navLink}
+                  to={`/?page=1&category=${drawer_item.title}`}
+                >
+                  <Typography>همه موارد این دسته</Typography>
+                </Link>
               </ListItem>
               {drawer_item.sub.map((sub_item) => (
-                <ListItem
-                  button
-                  onClick={() =>
-                    handleDrawerLink(sub_item.title, "subcategory")
-                  }
-                >
-                  <ListItemText
-                    primary={sub_item.title}
-                    style={{ textAlign: "right" }}
-                  />
+                <ListItem>
+                  <Link
+                    onClick={toggleDrawer}
+                    className={classes.navLink}
+                    to={`/?page=1&subcategory=${sub_item.title}`}
+                  >
+                    <Typography>{sub_item.title}</Typography>
+                  </Link>
                 </ListItem>
               ))}
             </List>
           </AccordionDetails>
         </Accordion>
       ))}
+      {isAuthenticated ? authLinks : ""}
     </div>
   );
   return (
@@ -185,15 +170,14 @@ const Appbar = ({
             <IconButton color="inherit" onClick={toggleDrawer}>
               <Menu />
             </IconButton>
-
-            {isAuthenticated ? authLinks : ""}
           </div>
 
-          <a className={classes.title} href="/">
-            <Typography variant="h5" color="primary">
+          <Link className={classes.title} to="/">
+            {/* <Typography variant="h5" color="primary">
               SAKAR
-            </Typography>
-          </a>
+            </Typography> */}
+            <img src={logo} style={{ height: 30 }} />
+          </Link>
           <IconButton color="inherit" onClick={onChange}>
             {checked ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
@@ -203,7 +187,7 @@ const Appbar = ({
         <div className={classes.rightIcons}>
           <Link className={classes.navLink} exact to="/profile/user-info">
             <IconButton color="inherit">
-              <AccountCircle />
+              <PermIdentityRounded />
             </IconButton>
           </Link>
           <Link className={classes.navLink} exact to="/cart">
@@ -216,15 +200,18 @@ const Appbar = ({
                 badgeContent={cart ? cart.length : 0}
                 color="secondary"
               >
-                <ShoppingCart />
+                <ShoppingCartOutlined />
               </Badge>
             </IconButton>
           </Link>
         </div>
-        <form onSubmit={(e) => onSearch(e)}>
+        <form
+          onSubmit={(e) => onSearch(e)}
+        >
           <TextField
-            style={{ marginTop: 5, width: "14rem" }}
+            style={{ marginTop: 5 }}
             id="search"
+            //name="keyword"
             placeholder="جستجو"
             color="secondary"
             variant="outlined"

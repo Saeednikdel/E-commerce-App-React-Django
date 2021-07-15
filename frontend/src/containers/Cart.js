@@ -67,8 +67,8 @@ const Cart = ({
     <div>
       <Grid container className={classes.pageContainer} spacing={2}>
         {cart.map((cartitem) => (
-          <Grid item xs={6} sm={4} md={3}>
-            <Card>
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Card variant="outlined">
               <CardActionArea href={`/detail/${cartitem.item}`}>
                 <CardMedia
                   component="img"
@@ -110,7 +110,7 @@ const Cart = ({
           </Grid>
         ))}
       </Grid>
-      <Card className={classes.cartTotal}>
+      <Card className={classes.cartTotal} variant="outlined">
         <Typography variant="h5">
           تعداد کل :{cart.reduce((n, { quantity }) => n + quantity, 0)}
         </Typography>
@@ -133,6 +133,7 @@ const Cart = ({
 const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
   cart: state.shop.cart,
+  order: state.shop.order,
 });
 export default connect(mapStateToProps, {
   load_cart,

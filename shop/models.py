@@ -7,10 +7,6 @@ LABEL_CHOICES = (
     ('N', 'new'),
     ('P', 'promotion')
 )
-ADDRESS_CHOICES = (
-    ('B', 'Billing'),
-    ('S', 'Shipping'),
-)
 
 
 class Category(models.Model):
@@ -38,6 +34,7 @@ class Item(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
     price = models.FloatField()
+    star = models.FloatField(default=5)
     discount_price = models.FloatField(blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
@@ -69,6 +66,19 @@ class Bookmark(models.Model):
         return self.user.email
 
 
+class Comment(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    confirmed = models.BooleanField(default=False)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    star = models.FloatField(default=5)
+    title = models.CharField(max_length=100)
+    description = models.CharField(max_length=1000)
+    date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.user.email
+
+
 class OrderItem(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     ordered = models.BooleanField(default=False)
@@ -79,6 +89,17 @@ class OrderItem(models.Model):
         return f"{self.quantity} of {self.item.title}"
 
 
+class Address(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    address = models.CharField(max_length=500)
+    zip_code = models.CharField(max_length=100)
+    phone = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.user.email
+
+
 class Order(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     ref_code = models.CharField(max_length=20)
@@ -86,10 +107,7 @@ class Order(models.Model):
     start_date = models.DateTimeField(auto_now_add=True)
     ordered_date = models.DateTimeField()
     ordered = models.BooleanField(default=False)
-    shipping_address = models.ForeignKey(
-        'BillingAddress', related_name='shipping_address', on_delete=models.SET_NULL, blank=True, null=True)
-    billing_address = models.ForeignKey(
-        'BillingAddress', related_name='billing_address', on_delete=models.SET_NULL, blank=True, null=True)
+    shipping_address = models.ForeignKey(Address, default=None, on_delete=models.SET_NULL, null=True)
     payment = models.ForeignKey(
         'Payment', on_delete=models.SET_NULL, blank=True, null=True)
     coupon = models.ForeignKey(
@@ -101,21 +119,6 @@ class Order(models.Model):
 
     def __str__(self):
         return self.user.email
-
-
-class BillingAddress(models.Model):
-    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
-    address = models.CharField(max_length=100)
-    zip_code = models.CharField(max_length=100)
-    phone = models.CharField(max_length=100)
-    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
-    default = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.user.email
-
-    class Meta:
-        verbose_name_plural = 'BillingAddresses'
 
 
 class Slide(models.Model):

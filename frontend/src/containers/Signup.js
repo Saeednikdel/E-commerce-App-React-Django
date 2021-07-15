@@ -1,8 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Link, Redirect } from "react-router-dom";
-import { signup } from "../actions/auth";
-import { TextField, Button, makeStyles, Typography } from "@material-ui/core";
+import { signup, resetState } from "../actions/auth";
+import {
+  TextField,
+  Button,
+  makeStyles,
+  Typography,
+  LinearProgress,
+} from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   navLink: {
@@ -11,8 +17,15 @@ const useStyles = makeStyles((theme) => ({
     margin: 5,
   },
 }));
-const Signup = ({ signup, isAuthenticated }) => {
+const Signup = ({
+  signup,
+  isAuthenticated,
+  requestSuccess,
+  requestFail,
+  resetState,
+}) => {
   const classes = useStyles();
+  const [requestSent, setRequestSent] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -21,10 +34,16 @@ const Signup = ({ signup, isAuthenticated }) => {
     re_password: "",
   });
 
-  const [accountCreated, setAccountCreated] = useState(false);
-
   const { name, email, password, re_password } = formData;
-
+  useEffect(() => {
+    if (requestFail) {
+      setRequestSent(false);
+      resetState();
+    }
+    if (requestSuccess) {
+      resetState();
+    }
+  }, [requestFail, requestSuccess]);
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -33,15 +52,16 @@ const Signup = ({ signup, isAuthenticated }) => {
 
     if (password === re_password) {
       signup({ name, email, password, re_password });
-      setAccountCreated(true);
+      setRequestSent(true)
     }
   };
 
   if (isAuthenticated) return <Redirect to="/" />;
-  if (accountCreated) return <Redirect to="login" />;
-
+  if (requestSuccess) return <Redirect to="login" />;
   return (
     <div style={{ textAlign: "center" }}>
+      {requestSent ? <LinearProgress /> : ""}
+
       <Typography variant="h5">ثبت نام</Typography>
       <form onSubmit={(e) => onSubmit(e)}>
         <div>
@@ -107,6 +127,8 @@ const Signup = ({ signup, isAuthenticated }) => {
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
+  requestSuccess: state.auth.requestSuccess,
+  requestFail: state.auth.requestFail,
 });
 
-export default connect(mapStateToProps, { signup })(Signup);
+export default connect(mapStateToProps, { signup, resetState })(Signup);

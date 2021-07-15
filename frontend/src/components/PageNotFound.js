@@ -1,10 +1,10 @@
 import React from "react";
-
+import { Typography } from "@material-ui/core";
 function PageNotFound() {
   return (
     <div style={{ textAlign: "center" }}>
-      <h1>404 PAGE NOT FOUND</h1>
-      <h1>صفحه مورد نظر یافت نشد !</h1>
+      <Typography variant="h4">404 PAGE NOT FOUND</Typography>
+      <Typography variant="h4">صفحه مورد نظر یافت نشد !</Typography>
     </div>
   );
 }
