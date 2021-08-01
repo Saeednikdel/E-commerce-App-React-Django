@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 function getSteps() {
-  return ["سبد خرید", "انتخاب آدرس", "پرداخت"];
+  return ["سبد خرید (به تفکیک فروشنده)", "انتخاب آدرس", "پرداخت"];
 }
 function ProfileComponent({ step }) {
   switch (step) {

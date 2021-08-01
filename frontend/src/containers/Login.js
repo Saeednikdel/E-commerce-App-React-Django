@@ -7,9 +7,9 @@ import {
   Button,
   makeStyles,
   Typography,
-  LinearProgress,
+  CircularProgress,
 } from "@material-ui/core";
-
+import { Done } from "@material-ui/icons";
 const useStyles = makeStyles((theme) => ({
   navLink: {
     textDecoration: "none",
@@ -17,12 +17,7 @@ const useStyles = makeStyles((theme) => ({
     margin: 5,
   },
 }));
-const Login = ({
-  login,
-  isAuthenticated,
-  requestFail,
-  resetState,
-}) => {
+const Login = ({ login, isAuthenticated, requestFail, resetState }) => {
   const classes = useStyles();
   const [requestSent, setRequestSent] = useState(false);
 
@@ -46,20 +41,19 @@ const Login = ({
 
   const onSubmit = (e) => {
     e.preventDefault();
-    setRequestSent(true)
+    setRequestSent(true);
     login(email, password);
   };
 
   if (isAuthenticated) return <Redirect to="/" />;
 
   return (
-    <div style={{ textAlign: "center" }}>
-      {requestSent ? <LinearProgress /> : ""}
-
+    <div style={{ textAlign: "center", marginTop: 20 }}>
       <Typography variant="h5">ورود</Typography>
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
         <div>
           <TextField
+            autoComplete="off"
             type="email"
             label="ایمیل"
             name="email"
@@ -70,6 +64,7 @@ const Login = ({
         </div>
         <div>
           <TextField
+            autoComplete="off"
             type="password"
             label="رمز عبور"
             name="password"
@@ -84,6 +79,17 @@ const Login = ({
           style={{ margin: 20 }}
           variant="contained"
           color="secondary"
+          startIcon={
+            requestSent ? (
+              <CircularProgress
+                size={20}
+                style={{ marginLeft: "10px" }}
+                color="inherit"
+              />
+            ) : (
+              <Done style={{ marginLeft: "10px" }} />
+            )
+          }
         >
           ورود
         </Button>

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { load_cart, logout2 ,load_comments} from "./shop";
+import { load_cart, logout2, load_comments } from "./shop";
 import {
   SIGNUP_SUCCESS,
   SIGNUP_FAIL,
@@ -21,8 +21,6 @@ import {
   AUTHENTICATED_FAIL,
   AUTHENTICATED_SUCCESS,
   RESET_STATE,
-  LOAD_USER_DETAIL_SUCCESS,
-  LOAD_USER_DETAIL_FAIL,
   SET_USER_DETAIL_FAIL,
   SET_USER_DETAIL_SUCCESS,
   LOAD_ADDRESS_SUCCESS,
@@ -66,37 +64,6 @@ export const comment = (item, star, title, description) => async (dispatch) => {
     }
   }
 };
-export const load_user_detail = () => async (dispatch) => {
-  if (localStorage.getItem("access")) {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("access")}`,
-        Accept: "application/json",
-      },
-    };
-    const user = localStorage.getItem("id");
-    try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/user-detail/${user}/`,
-        config
-      );
-
-      dispatch({
-        type: LOAD_USER_DETAIL_SUCCESS,
-        payload: res.data,
-      });
-    } catch (err) {
-      dispatch({
-        type: LOAD_USER_DETAIL_FAIL,
-      });
-    }
-  } else {
-    dispatch({
-      type: LOAD_USER_DETAIL_FAIL,
-    });
-  }
-};
 
 export const set_user_detail =
   (id, name, account_no, phone_no, birth_date, id_code) => async (dispatch) => {
@@ -128,7 +95,7 @@ export const set_user_detail =
           type: SET_USER_DETAIL_SUCCESS,
           payload: res.data,
         });
-        dispatch(load_user_detail());
+        dispatch(load_user());
       } catch (err) {
         dispatch({
           type: SET_USER_DETAIL_FAIL,
@@ -141,37 +108,39 @@ export const set_user_detail =
     }
   };
 
-export const load_bookmark = () => async (dispatch) => {
-  if (localStorage.getItem("access")) {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("access")}`,
-        Accept: "application/json",
-      },
-    };
-    const userId = localStorage.getItem("id");
-    try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/bookmark-list/${userId}/`,
-        config
-      );
+export const load_bookmark =
+  (page = 1) =>
+  async (dispatch) => {
+    if (localStorage.getItem("access")) {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${localStorage.getItem("access")}`,
+          Accept: "application/json",
+        },
+      };
+      const userId = localStorage.getItem("id");
+      try {
+        const res = await axios.get(
+          `${process.env.REACT_APP_API_URL}/api/bookmark-list/${userId}/${page}/`,
+          config
+        );
 
-      dispatch({
-        type: LOAD_BOOKMARK_SUCCESS,
-        payload: res.data,
-      });
-    } catch (err) {
+        dispatch({
+          type: LOAD_BOOKMARK_SUCCESS,
+          payload: res.data,
+        });
+      } catch (err) {
+        dispatch({
+          type: LOAD_BOOKMARK_FAIL,
+        });
+      }
+    } else {
       dispatch({
         type: LOAD_BOOKMARK_FAIL,
       });
     }
-  } else {
-    dispatch({
-      type: LOAD_BOOKMARK_FAIL,
-    });
-  }
-};
+  };
 
 export const load_address = () => async (dispatch) => {
   if (localStorage.getItem("access")) {
@@ -340,7 +309,6 @@ export const load_user = () => async (dispatch) => {
         payload: res.data,
       });
       dispatch(load_cart());
-      dispatch(load_bookmark());
     } catch (error) {
       dispatch({
         type: USER_LOADED_FAIL,
@@ -524,7 +492,7 @@ export const set_email =
         dispatch({
           type: SET_EMAIL_SUCCESS,
         });
-        dispatch(load_user_detail());
+        dispatch(load_user());
       } catch (error) {
         dispatch({
           type: SET_EMAIL_FAIL,

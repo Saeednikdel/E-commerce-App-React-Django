@@ -51,7 +51,7 @@ const Profile = ({ isAuthenticated, match }) => {
           />
         ))}
       </Tabs>
-      <Card variant="outlined">
+      <Card variant="outlined" style={{ minHeight: 400 }}>
         <ProfileComponent value={tab} />
       </Card>
     </div>

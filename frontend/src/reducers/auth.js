@@ -19,8 +19,6 @@ import {
   AUTHENTICATED_FAIL,
   AUTHENTICATED_SUCCESS,
   RESET_STATE,
-  LOAD_USER_DETAIL_FAIL,
-  LOAD_USER_DETAIL_SUCCESS,
   SET_USER_DETAIL_FAIL,
   SET_USER_DETAIL_SUCCESS,
   LOAD_ADDRESS_SUCCESS,
@@ -99,11 +97,6 @@ export default function (state = initialState, action) {
         requestSuccess: true,
       };
     //new
-    case LOAD_USER_DETAIL_SUCCESS:
-      return {
-        ...state,
-        userdetail: payload,
-      };
     case SET_USER_DETAIL_SUCCESS:
       return {
         ...state,

@@ -11,22 +11,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 function AppCarousel({ images }) {
   const classes = useStyles();
-    const items = images ? images : [{image: placeholderImage}];
-    return (
+  const items =
+    images.length > 0 ? images : [{ id: 0, image: placeholderImage }];
+  return (
     <div className={classes.pageContainer}>
       <Carousel swipe={true} stopAutoPlayOnHover={true}>
-        {items.map((item, i) => (
-          <Item key={i} item={item} />
+        {items.map((item) => (
+          <CardMedia
+            key={item.id}
+            component="img"
+            height="380"
+            image={item.image}
+            onError={(e) => {
+              e.target.src = placeholderImage;
+            }}
+          />
         ))}
       </Carousel>
     </div>
-  );
-}
-function Item(props) {
-  return (
-    <>
-      <CardMedia component="img" height="400" image={props.item.image} />
-    </>
   );
 }
 

@@ -7,7 +7,7 @@ import {
   Button,
 } from "@material-ui/core";
 import { connect } from "react-redux";
-import { load_user_detail } from "../actions/auth";
+import { load_user } from "../actions/auth";
 import jMoment from "moment-jalaali";
 
 import SetEmail from "../containers/SetEmail";
@@ -15,15 +15,14 @@ import SetPassword from "../containers/SetPassword";
 import Popup from "../components/Popup";
 import SetUserDetail from "../containers/SetUserDetail";
 
-const UserDetail = ({ user, load_user_detail }) => {
+const UserDetail = ({ user, load_user }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        await load_user_detail();
+        await load_user();
       } catch (err) {}
     };
-      fetchData();
-    
+    fetchData();
   }, []);
   const [openPopup, setOpenPopup] = useState(false);
   const [childComponent, setchildComponent] = useState("");
@@ -35,7 +34,7 @@ const UserDetail = ({ user, load_user_detail }) => {
 
   function ChildrenComponent({ value }) {
     switch (value) {
-      case "editDetail":
+      case "ویرایش مشخصات":
         return (
           <SetUserDetail
             propsid={user.id}
@@ -47,19 +46,19 @@ const UserDetail = ({ user, load_user_detail }) => {
             setOpenPopup={setOpenPopup}
           />
         );
-      case "setEmail":
+      case "تغییر ایمیل":
         return <SetEmail setOpenPopup={setOpenPopup} />;
-      case "setPassword":
+      case "تغییر رمز عبور":
         return <SetPassword setOpenPopup={setOpenPopup} />;
     }
   }
   return user ? (
-    <div style={{ marginRight: 20 }}>
+    <div style={{ marginRight: 20, marginLeft: 20 }}>
       <Button
         style={{ marginTop: 20, marginLeft: 20 }}
         color="secondary"
         variant="outlined"
-        onClick={() => handleDialog("editDetail")}
+        onClick={() => handleDialog("ویرایش مشخصات")}
       >
         ویرایش مشخصات
       </Button>
@@ -68,7 +67,7 @@ const UserDetail = ({ user, load_user_detail }) => {
         style={{ marginLeft: 20, marginTop: 20 }}
         color="secondary"
         variant="outlined"
-        onClick={() => handleDialog("setPassword")}
+        onClick={() => handleDialog("تغییر رمز عبور")}
       >
         تغییر رمز عبور
       </Button>
@@ -77,7 +76,7 @@ const UserDetail = ({ user, load_user_detail }) => {
         style={{ marginTop: 20 }}
         color="secondary"
         variant="outlined"
-        onClick={() => handleDialog("setEmail")}
+        onClick={() => handleDialog("تغییر ایمیل")}
       >
         تغییر ایمیل
       </Button>
@@ -117,8 +116,11 @@ const UserDetail = ({ user, load_user_detail }) => {
       <Typography variant="subtitle1">
         {user.id_code ? user.id_code : "--"}
       </Typography>
-      <Divider />
-      <Popup openPopup={openPopup} setOpenPopup={setOpenPopup}>
+      <Popup
+        title={childComponent}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
         <ChildrenComponent value={childComponent} />
       </Popup>
     </div>
@@ -128,6 +130,6 @@ const UserDetail = ({ user, load_user_detail }) => {
 };
 
 const mapStateToProps = (state) => ({
-  user: state.auth.userdetail,
+  user: state.auth.user,
 });
-export default connect(mapStateToProps, { load_user_detail })(UserDetail);
+export default connect(mapStateToProps, { load_user })(UserDetail);

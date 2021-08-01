@@ -26,12 +26,10 @@ export default function DialogAlert({ alert, setAlert }) {
           <Button onClick={handleClose} color="secondary">
             بستن
           </Button>
-          {alert.href !== "" ? (
+          {alert.actionUrl && (
             <Button href={alert.actionUrl} color="secondary" autoFocus>
               {alert.actionText}
             </Button>
-          ) : (
-            ""
           )}
         </DialogActions>
       </Dialog>

@@ -1,10 +1,26 @@
 from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
 from .models import SubCategory, Category, Item, \
     Slide, OrderItem, Order, Payment, Coupon, Refund,\
-    Address, Images, Bookmark, Comment
+    Address, Images, Bookmark, Comment, Brand, Color
 
-# Register your models here.
+
+class BrandAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('title', 'is_active')
+    list_editable = ('is_active',)
+    list_per_page = 10
+    search_fields = ('title', 'is_active')
+
+
+class ColorAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('title', 'is_active')
+    list_editable = ('is_active',)
+    list_per_page = 10
+    search_fields = ('title', 'is_active')
+
+
 admin.site.register(Item)
+admin.site.register(Color, ColorAdmin)
 admin.site.register(Comment)
 admin.site.register(Bookmark)
 admin.site.register(Images)
@@ -17,3 +33,4 @@ admin.site.register(Payment)
 admin.site.register(Coupon)
 admin.site.register(Refund)
 admin.site.register(Address)
+admin.site.register(Brand, BrandAdmin)

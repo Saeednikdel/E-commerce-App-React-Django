@@ -15,11 +15,12 @@ import {
   BOOKMARK_SUCCESS,
   BOOKMARK_FAIL,
   LOAD_COMMENTS_SUCCESS,
-  LOAD_COMMENTS_FAIL,
-
+  LOAD_MENU_SUCCESS,
+  LOAD_MENU_FAIL,
+  LOAD_BRAND_SUCCESS,
+  LOAD_BRAND_FAIL,
 } from "../actions/types";
 const initialState = {
-  items: null,
 };
 
 export default function (state = initialState, action) {
@@ -30,12 +31,23 @@ export default function (state = initialState, action) {
       return {
         ...state,
         items: payload,
+        item: null,
+        comments: null,
       };
     case LOAD_ITEM_SUCCESS:
       return {
         ...state,
-        item: payload.item,
-        images: payload.images,
+        item: payload,
+      };
+    case LOAD_BRAND_SUCCESS:
+      return {
+        ...state,
+        brand: payload,
+      };
+    case LOAD_MENU_SUCCESS:
+      return {
+        ...state,
+        category: payload,
       };
     case LOAD_COMMENTS_SUCCESS:
       return {
@@ -46,31 +58,28 @@ export default function (state = initialState, action) {
     case LOAD_CART_SUCCESS:
       return {
         ...state,
-        order: payload.order,
-        cart: payload.items,
+        order: payload,
       };
     case ADD_TO_CART_SUCCESS:
       return {
         ...state,
-        cart: payload,
+        order: payload,
       };
     case REMOVE_ONE_FROM_CART_SUCCESS:
       return {
         ...state,
-        cart: payload,
+        order: payload,
       };
     case REMOVE_FROM_CART_SUCCESS:
       return {
         ...state,
-        cart: payload,
+        order: payload,
       };
     case LOGOUT:
       localStorage.removeItem("id");
       return {
         ...state,
-        cart: null,
-        user: null,
-        address: null,
+        order: null,
       };
     case BOOKMARK_SUCCESS:
     case BOOKMARK_FAIL:

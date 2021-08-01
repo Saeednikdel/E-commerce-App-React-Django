@@ -1,7 +1,6 @@
 from django.db import models
 from accounts.models import UserAccount
 
-
 LABEL_CHOICES = (
     ('S', 'sale'),
     ('N', 'new'),
@@ -9,41 +8,42 @@ LABEL_CHOICES = (
 )
 
 
-class Category(models.Model):
-    title = models.CharField(max_length=100)
-    description = models.TextField()
-    image = models.ImageField()
-    is_active = models.BooleanField(default=True)
-
-    def __str__(self):
-        return self.title
-
-
 class SubCategory(models.Model):
     title = models.CharField(max_length=100)
-    description = models.TextField()
-    image = models.ImageField()
+    description = models.TextField(blank=True)
+    image = models.ImageField(blank=True)
     is_active = models.BooleanField(default=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
 
 
-class Item(models.Model):
-    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+class Category(models.Model):
     title = models.CharField(max_length=100)
-    price = models.FloatField()
-    star = models.FloatField(default=5)
-    discount_price = models.FloatField(blank=True, null=True)
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
-    subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
-    label = models.CharField(choices=LABEL_CHOICES, max_length=1)
-    add_date = models.DateTimeField(auto_now_add=True)
-    stock_no = models.CharField(max_length=10)
-    description_short = models.CharField(max_length=50)
-    description_long = models.TextField()
-    image = models.ImageField()
+    description = models.TextField(blank=True)
+    image = models.ImageField(blank=True)
+    is_active = models.BooleanField(default=True)
+    subcategory = models.ManyToManyField(SubCategory, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Brand(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    image = models.ImageField(blank=True)
+    is_active = models.BooleanField(default=True)
+    category = models.ManyToManyField(Category)
+    subcategory = models.ManyToManyField(SubCategory)
+
+    def __str__(self):
+        return self.title
+
+
+class Color(models.Model):
+    title = models.CharField(max_length=100)
+    color = models.CharField(blank=True, max_length=20)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -52,10 +52,34 @@ class Item(models.Model):
 
 class Images(models.Model):
     image = models.ImageField()
-    item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="images")
+
+
+class Item(models.Model):
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    title = models.CharField(max_length=100)
+    price = models.FloatField()
+    star = models.FloatField(default=5)
+    discount_price = models.FloatField(blank=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    subcategory = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, blank=True)
+    color = models.ManyToManyField(Color, blank=True, null=True)
+    label = models.CharField(choices=LABEL_CHOICES, max_length=1)
+    add_date = models.DateTimeField(auto_now_add=True)
+    stock_no = models.IntegerField(default=0)
+    sold_no = models.IntegerField(default=0)
+    view = models.IntegerField(default=0)
+    description_short = models.TextField()
+    description_long = models.TextField()
+    image = models.ImageField()
+    is_active = models.BooleanField(default=True)  # it should be change to false
+    image_list = models.ManyToManyField(Images, blank=True, null=True)
 
     def __str__(self):
-        return self.item.title
+        return self.title
+
+    def get_discount_percent(self):
+        return (self.price - self.discount_price) / self.price * 100
 
 
 class Bookmark(models.Model):
@@ -84,9 +108,24 @@ class OrderItem(models.Model):
     ordered = models.BooleanField(default=False)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f"{self.quantity} of {self.item.title}"
+
+    def get_total_item_price(self):
+        return self.quantity * self.item.price
+
+    def get_total_discount_item_price(self):
+        return self.quantity * self.item.discount_price
+
+    def get_amount_saved(self):
+        return self.get_total_item_price() - self.get_total_discount_item_price()
+
+    def get_final_price(self):
+        if self.item.discount_price and self.item.discount_price > 0:
+            return self.get_total_discount_item_price()
+        return self.get_total_item_price()
 
 
 class Address(models.Model):
@@ -102,6 +141,7 @@ class Address(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
+    seller = models.ForeignKey(UserAccount, on_delete=models.CASCADE, related_name='seller')
     ref_code = models.CharField(max_length=20)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
@@ -119,6 +159,14 @@ class Order(models.Model):
 
     def __str__(self):
         return self.user.email
+
+    def get_total(self):
+        total = 0
+        for order_item in self.items.all():
+            total += order_item.get_final_price()
+        if self.coupon:
+            total -= self.coupon.amount
+        return total
 
 
 class Slide(models.Model):

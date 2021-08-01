@@ -21,7 +21,11 @@ const Layout = (props) => {
         await props.load_user();
       } catch (err) {}
     };
-
+    if (JSON.parse(localStorage.getItem("darkState"))) {
+      document
+        .querySelector('meta[name="theme-color"]')
+        .setAttribute("content", "#464646");
+    }
     fetchData();
   }, []);
   const [darkState, setDarkState] = useState(
@@ -45,6 +49,15 @@ const Layout = (props) => {
     },
   });
   const handleThemeChange = () => {
+        if (!darkState) {
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute("content", "#464646");
+        } else {
+          document
+            .querySelector('meta[name="theme-color"]')
+            .setAttribute("content", "#ffffff");
+        }
     setDarkState(!darkState);
     localStorage.setItem(
       "darkState",

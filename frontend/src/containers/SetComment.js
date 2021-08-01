@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { resetState, comment } from "../actions/auth";
-import { TextField, Button, LinearProgress } from "@material-ui/core";
+import {
+  TextField,
+  Button,
+  makeStyles,
+  CircularProgress,
+} from "@material-ui/core";
+import { Done } from "@material-ui/icons";
 import { Rating } from "@material-ui/lab";
-
+const useStyles = makeStyles((theme) => ({
+  textField: { marginTop: 5, minWidth: 240 },
+  button: { marginTop: 20, marginBottom: 20 },
+}));
 const SetComment = ({
   setOpenPopup,
   requestSuccess,
@@ -18,6 +27,7 @@ const SetComment = ({
     title: "",
     description: "",
   });
+  const classes = useStyles();
 
   const { item, star, title, description } = formData;
   const [requestSent, setRequestSent] = useState(false);
@@ -42,13 +52,14 @@ const SetComment = ({
 
   return (
     <div style={{ textAlign: "center" }}>
-      {requestSent ? <LinearProgress /> : ""}
-      <form onSubmit={(e) => onSubmit(e)}>
-        <div style={{ marginTop: 5 }}>
+      <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
+        <div>
           <Rating name="star" value={star} onChange={(e) => onChange(e)} />
         </div>
-        <div style={{ marginTop: 5 }}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="text"
             label="عنوان"
             name="title"
@@ -57,8 +68,10 @@ const SetComment = ({
             required
           />
         </div>
-        <div style={{ marginTop: 5 }}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="text"
             label="نظر"
             name="description"
@@ -70,10 +83,21 @@ const SetComment = ({
           />
         </div>
         <Button
+          className={classes.button}
           type="submit"
-          style={{ margin: 20 }}
           variant="contained"
           color="secondary"
+          startIcon={
+            requestSent ? (
+              <CircularProgress
+                size={20}
+                style={{ marginLeft: "10px" }}
+                color="inherit"
+              />
+            ) : (
+              <Done style={{ marginLeft: "10px" }} />
+            )
+          }
         >
           تایید
         </Button>

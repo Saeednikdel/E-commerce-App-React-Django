@@ -14,11 +14,10 @@ import {
   AccordionSummary,
   Badge,
 } from "@material-ui/core";
-import React, { useState } from "react";
-import { Link, NavLink, withRouter } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../actions/auth";
-import { load_items } from "../actions/shop";
 import {
   ShoppingCartOutlined,
   Brightness7,
@@ -28,19 +27,14 @@ import {
   ExpandMore,
   SearchSharp,
 } from "@material-ui/icons";
-import { drawer_items } from "./DrawerItems";
 import logo from "../sk.svg";
+import { load_menu } from "../actions/shop";
 const useStyles = makeStyles((theme) => ({
-  title: {
-    marginLeft: 20,
-    textDecoration: "none",
-    flexGrow: 1,
-  },
+  center: { flexGrow: 1, textAlign: "center" },
   rightIcons: { flexGrow: 1 },
   navLink: {
     textDecoration: "none",
     color: "inherit",
-    // margin: 5,
   },
   exit: {
     textDecoration: "none",
@@ -61,10 +55,15 @@ const Appbar = ({
   logout,
   checked,
   onChange,
-  cart,
-  load_items,
+  order,
   history,
+  category,
+  load_menu,
+  subcategory,
 }) => {
+  useEffect(() => {
+    load_menu();
+  }, []);
   const classes = useStyles();
   const authLinks = (
     <Toolbar>
@@ -78,7 +77,6 @@ const Appbar = ({
     setDrawerState(!drawerstate);
   };
   const [drawerstate, setDrawerState] = useState(false);
-
   const toggleDrawer = (event) => {
     if (
       event.type === "keydown" &&
@@ -98,86 +96,28 @@ const Appbar = ({
 
   const onSearch = (e) => {
     e.preventDefault();
-    const currentUrlParams = new URLSearchParams(window.location.search);
-    currentUrlParams.delete("category");
-    currentUrlParams.delete("subcategory");
-    currentUrlParams.set("page", 1);
+    const currentUrlParams = new URLSearchParams();
     currentUrlParams.set("keyword", search);
     if (window.location.pathname === "/") {
       history.push(
         window.location.pathname + "?" + currentUrlParams.toString()
       );
-      // load_items(1, search, false, false);
     } else {
       window.location.replace("/?keyword=" + search);
     }
   };
-  const list = () => (
-    <div className={classes.list}>
-      <Toolbar>
-        <Link className={classes.title} to="/" onClick={toggleDrawer}>
-          <Typography variant="h6" color="textPrimary">
-            SAKAR
-          </Typography>
-        </Link>
-      </Toolbar>
-      {drawer_items.map((drawer_item) => (
-        <Accordion
-          expanded={expanded === drawer_item.category}
-          onChange={handleExpand(drawer_item.category)}
-        >
-          <AccordionSummary
-            expandIcon={<ExpandMore />}
-            aria-controls="panel1bh-content"
-            id="panel1bh-header"
-          >
-            <Typography>{drawer_item.title}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <List>
-              <ListItem>
-                <Link
-                  onClick={toggleDrawer}
-                  className={classes.navLink}
-                  to={`/?page=1&category=${drawer_item.title}`}
-                >
-                  <Typography>همه موارد این دسته</Typography>
-                </Link>
-              </ListItem>
-              {drawer_item.sub.map((sub_item) => (
-                <ListItem>
-                  <Link
-                    onClick={toggleDrawer}
-                    className={classes.navLink}
-                    to={`/?page=1&subcategory=${sub_item.title}`}
-                  >
-                    <Typography>{sub_item.title}</Typography>
-                  </Link>
-                </ListItem>
-              ))}
-            </List>
-          </AccordionDetails>
-        </Accordion>
-      ))}
-      {isAuthenticated ? authLinks : ""}
-    </div>
-  );
   return (
     <>
       <AppBar position="sticky" color="inherit">
         <Toolbar>
-          <div className={classes.rightIcons}>
-            <IconButton color="inherit" onClick={toggleDrawer}>
-              <Menu />
-            </IconButton>
+          <IconButton color="inherit" onClick={toggleDrawer}>
+            <Menu />
+          </IconButton>
+          <div className={classes.center}>
+            <Link to="/">
+              <img src={logo} style={{ height: 30 }} />
+            </Link>
           </div>
-
-          <Link className={classes.title} to="/">
-            {/* <Typography variant="h5" color="primary">
-              SAKAR
-            </Typography> */}
-            <img src={logo} style={{ height: 30 }} />
-          </Link>
           <IconButton color="inherit" onClick={onChange}>
             {checked ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
@@ -197,7 +137,11 @@ const Appbar = ({
                   vertical: "top",
                   horizontal: "left",
                 }}
-                badgeContent={cart ? cart.length : 0}
+                badgeContent={
+                  order
+                    ? order.reduce((n, { cart_items }) => n + cart_items.length, 0)
+                    : 0
+                }
                 color="secondary"
               >
                 <ShoppingCartOutlined />
@@ -205,13 +149,11 @@ const Appbar = ({
             </IconButton>
           </Link>
         </div>
-        <form
-          onSubmit={(e) => onSearch(e)}
-        >
+        <form autoComplete="off" onSubmit={(e) => onSearch(e)}>
           <TextField
+            autoComplete="off"
             style={{ marginTop: 5 }}
             id="search"
-            //name="keyword"
             placeholder="جستجو"
             color="secondary"
             variant="outlined"
@@ -230,13 +172,52 @@ const Appbar = ({
       </Toolbar>
       <Divider />
 
-      <Drawer
-        // BackdropProps={{ invisible: true }}
-        anchor={"left"}
-        open={drawerstate}
-        onClose={toggleDrawer}
-      >
-        {list()}
+      <Drawer anchor={"left"} open={drawerstate} onClose={toggleDrawer}>
+        <div className={classes.list}>
+          <Toolbar>
+            <Link className={classes.navLink} to="/" onClick={toggleDrawer}>
+              <Typography variant="h6" color="textPrimary">
+                صفحه اصلی
+              </Typography>
+            </Link>
+          </Toolbar>
+          {category &&
+            category.map((cat) => (
+              <Accordion
+                expanded={expanded === cat.title}
+                onChange={handleExpand(cat.title)}
+              >
+                <AccordionSummary expandIcon={<ExpandMore />}>
+                  <Typography>{cat.title}</Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <List>
+                    <ListItem>
+                      <Link
+                        onClick={toggleDrawer}
+                        className={classes.navLink}
+                        to={`/?page=1&category=${cat.title}`}
+                      >
+                        <Typography>همه موارد این دسته</Typography>
+                      </Link>
+                    </ListItem>
+                    {cat.sub_category.map((sub) => (
+                      <ListItem>
+                        <Link
+                          onClick={toggleDrawer}
+                          className={classes.navLink}
+                          to={`/?page=1&subcategory=${sub.title}`}
+                        >
+                          <Typography>{sub.title}</Typography>
+                        </Link>
+                      </ListItem>
+                    ))}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+            ))}
+          {isAuthenticated && authLinks}
+        </div>
       </Drawer>
     </>
   );
@@ -244,9 +225,10 @@ const Appbar = ({
 
 const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
-  cart: state.shop.cart,
+  order: state.shop.order,
+  category: state.shop.category,
 });
 
 export default withRouter(
-  connect(mapStateToProps, { logout, load_items })(Appbar)
+  connect(mapStateToProps, { logout, load_menu })(Appbar)
 );

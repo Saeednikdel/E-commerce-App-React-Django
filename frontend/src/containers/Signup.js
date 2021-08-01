@@ -7,8 +7,10 @@ import {
   Button,
   makeStyles,
   Typography,
-  LinearProgress,
+  CircularProgress,
 } from "@material-ui/core";
+import DialogAlert from "../components/DialogAlert";
+import { Done } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   navLink: {
@@ -26,15 +28,32 @@ const Signup = ({
 }) => {
   const classes = useStyles();
   const [requestSent, setRequestSent] = useState(false);
-
+  const [alert, setAlert] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     re_password: "",
   });
-
+  // const [helperText, setHelperText] = useState({
+  //   name_helper: "",
+  //   email_helper: "",
+  //   password_helper: "",
+  //   re_password_helper: "",
+  // });
+  // const [errorList, setErrorList] = useState({
+  //   name_error: false,
+  //   email_error: false,
+  //   password_error: false,
+  //   re_password_error: false,
+  // });
   const { name, email, password, re_password } = formData;
+  // const { name_helper, email_helper, password_helper, re_password_helper } = helperText;
+  // const { name_error, email_error, password_error, re_password_error } = errorList;
   useEffect(() => {
     if (requestFail) {
       setRequestSent(false);
@@ -42,6 +61,12 @@ const Signup = ({
     }
     if (requestSuccess) {
       resetState();
+      setRequestSent(false);
+      setAlert({
+        isOpen: true,
+        title: "ثبت نام انجام شد.",
+        message: "برای فعالسازی حساب خود لینک ارسال شده به ایمیل، را باز کنید.",
+      });
     }
   }, [requestFail, requestSuccess]);
   const onChange = (e) =>
@@ -52,20 +77,18 @@ const Signup = ({
 
     if (password === re_password) {
       signup({ name, email, password, re_password });
-      setRequestSent(true)
+      setRequestSent(true);
     }
   };
 
   if (isAuthenticated) return <Redirect to="/" />;
-  if (requestSuccess) return <Redirect to="login" />;
   return (
-    <div style={{ textAlign: "center" }}>
-      {requestSent ? <LinearProgress /> : ""}
-
+    <div style={{ textAlign: "center", marginTop: 20 }}>
       <Typography variant="h5">ثبت نام</Typography>
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
         <div>
           <TextField
+            autoComplete="off"
             type="text"
             label="نام"
             name="name"
@@ -76,6 +99,7 @@ const Signup = ({
         </div>
         <div>
           <TextField
+            autoComplete="off"
             type="email"
             label="ایمیل"
             name="email"
@@ -86,6 +110,7 @@ const Signup = ({
         </div>
         <div>
           <TextField
+            autoComplete="off"
             type="password"
             label="رمز عبور"
             name="password"
@@ -97,6 +122,7 @@ const Signup = ({
         </div>
         <div>
           <TextField
+            autoComplete="off"
             type="password"
             label="تایید رمز عبور"
             name="re_password"
@@ -111,6 +137,17 @@ const Signup = ({
           type="submit"
           variant="contained"
           color="secondary"
+          startIcon={
+            requestSent ? (
+              <CircularProgress
+                size={20}
+                style={{ marginLeft: "10px" }}
+                color="inherit"
+              />
+            ) : (
+              <Done style={{ marginLeft: "10px" }} />
+            )
+          }
         >
           ایجاد حساب
         </Button>
@@ -121,6 +158,7 @@ const Signup = ({
           ورود{" "}
         </Link>
       </Typography>
+      <DialogAlert alert={alert} setAlert={setAlert} />
     </div>
   );
 };

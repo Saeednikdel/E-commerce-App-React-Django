@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { reset_password_confirm, resetState } from "../actions/auth";
-import { TextField, Button, LinearProgress } from "@material-ui/core";
+import { TextField, Button, CircularProgress } from "@material-ui/core";
+import { Done } from "@material-ui/icons";
 
 const ResetPasswordConfirm = ({
   requestSuccess,
@@ -41,11 +42,11 @@ const ResetPasswordConfirm = ({
   };
   if (requestSent === requestSuccess) return <Redirect to="/" />;
   return (
-    <div style={{ textAlign: "center" }}>
-      {requestSent ? <LinearProgress /> : ""}
-      <form onSubmit={(e) => onSubmit(e)}>
+    <div style={{ textAlign: "center", marginTop: 20 }}>
+      <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
         <div>
           <TextField
+            autoComplete="off"
             type="password"
             label="رمز عبور جدید"
             name="new_password"
@@ -57,6 +58,7 @@ const ResetPasswordConfirm = ({
         </div>
         <div>
           <TextField
+            autoComplete="off"
             type="password"
             label="تکرار رمز عبور"
             name="re_new_password"
@@ -71,6 +73,17 @@ const ResetPasswordConfirm = ({
           variant="contained"
           color="secondary"
           type="submit"
+          startIcon={
+            requestSent ? (
+              <CircularProgress
+                size={20}
+                style={{ marginLeft: "10px" }}
+                color="inherit"
+              />
+            ) : (
+              <Done style={{ marginLeft: "10px" }} />
+            )
+          }
         >
           تایید
         </Button>

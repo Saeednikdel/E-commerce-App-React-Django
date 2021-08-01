@@ -17,18 +17,27 @@ import {
   BOOKMARK_FAIL,
   LOAD_COMMENTS_SUCCESS,
   LOAD_COMMENTS_FAIL,
-
+  LOAD_MENU_SUCCESS,
+  LOAD_MENU_FAIL,
+  LOAD_BRAND_SUCCESS,
+  LOAD_BRAND_FAIL,
 } from "../actions/types";
 import { load_bookmark } from "./auth";
 export const load_items =
-  (page, keyword, category, subcategory) => async (dispatch) => {
+  (page, keyword, category, subcategory, sort, brand) => async (dispatch) => {
     const config = {
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
       },
     };
-    const body = JSON.stringify({ keyword, category, subcategory });
+    const body = JSON.stringify({
+      keyword,
+      category,
+      subcategory,
+      sort,
+      brand,
+    });
     try {
       const res = await axios.post(
         `${process.env.REACT_APP_API_URL}/api/items-list/${page}/`,
@@ -73,17 +82,18 @@ export const load_comments =
   };
 
 export const load_item = (itemId) => async (dispatch) => {
-  const csrftoken = getCookie("csrftoken");
   const config = {
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      "X-CSRFToken": csrftoken,
     },
   };
+  const user = localStorage.getItem("id") ? localStorage.getItem("id") : false;
+  const body = JSON.stringify({ user });
   try {
-    const res = await axios.get(
+    const res = await axios.post(
       `${process.env.REACT_APP_API_URL}/api/item-detail/${itemId}/`,
+      body,
       config
     );
 
@@ -91,7 +101,6 @@ export const load_item = (itemId) => async (dispatch) => {
       type: LOAD_ITEM_SUCCESS,
       payload: res.data,
     });
-    dispatch(load_comments(itemId, 1));
   } catch (err) {
     dispatch({
       type: LOAD_ITEM_FAIL,
@@ -131,40 +140,42 @@ export const load_cart = () => async (dispatch) => {
   }
 };
 
-export const add_to_cart = (itemId) => async (dispatch) => {
-  if (localStorage.getItem("access")) {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `JWT ${localStorage.getItem("access")}`,
-        Accept: "application/json",
-      },
-    };
-    const user = localStorage.getItem("id");
-    const body = JSON.stringify({ user });
+export const add_to_cart =
+  (itemId, color = false) =>
+  async (dispatch) => {
+    if (localStorage.getItem("access")) {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `JWT ${localStorage.getItem("access")}`,
+          Accept: "application/json",
+        },
+      };
+      const user = localStorage.getItem("id");
+      const body = JSON.stringify({ user, color });
 
-    try {
-      const res = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/cart-add/${itemId}/`,
-        body,
-        config
-      );
+      try {
+        const res = await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/cart-add/${itemId}/`,
+          body,
+          config
+        );
 
-      dispatch({
-        type: ADD_TO_CART_SUCCESS,
-        payload: res.data,
-      });
-    } catch (err) {
+        dispatch({
+          type: ADD_TO_CART_SUCCESS,
+          payload: res.data,
+        });
+      } catch (err) {
+        dispatch({
+          type: ADD_TO_CART_FAIL,
+        });
+      }
+    } else {
       dispatch({
         type: ADD_TO_CART_FAIL,
       });
     }
-  } else {
-    dispatch({
-      type: ADD_TO_CART_FAIL,
-    });
-  }
-};
+  };
 
 export const remove_from_cart = (itemId) => async (dispatch) => {
   if (localStorage.getItem("access")) {
@@ -200,7 +211,7 @@ export const remove_from_cart = (itemId) => async (dispatch) => {
     });
   }
 };
-export const remove_one_from_cart = (itemId) => async (dispatch) => {
+export const remove_one_from_cart = (itemId, color) => async (dispatch) => {
   if (localStorage.getItem("access")) {
     const config = {
       headers: {
@@ -210,7 +221,7 @@ export const remove_one_from_cart = (itemId) => async (dispatch) => {
       },
     };
     const user = localStorage.getItem("id");
-    const body = JSON.stringify({ user });
+    const body = JSON.stringify({ user, color });
 
     try {
       const res = await axios.post(
@@ -234,7 +245,7 @@ export const remove_one_from_cart = (itemId) => async (dispatch) => {
     });
   }
 };
-export const bookmark = (id) => async (dispatch) => {
+export const bookmark = (id, page) => async (dispatch) => {
   if (localStorage.getItem("access")) {
     const config = {
       headers: {
@@ -256,7 +267,11 @@ export const bookmark = (id) => async (dispatch) => {
         type: BOOKMARK_SUCCESS,
         payload: res.data,
       });
-      dispatch(load_bookmark());
+      if (page) {
+        dispatch(load_bookmark(page));
+      } else {
+        dispatch(load_item(id));
+      }
     } catch (err) {
       dispatch({
         type: BOOKMARK_FAIL,
@@ -272,18 +287,54 @@ export const logout2 = () => (dispatch) => {
   dispatch({ type: LOGOUT });
 };
 
-function getCookie(name) {
-  var cookieValue = null;
-  if (document.cookie && document.cookie !== "") {
-    var cookies = document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
-      if (cookie.substring(0, name.length + 1) === name + "=") {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
+export const load_menu = () => async (dispatch) => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  };
+  try {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}/api/menu-list/`,
+      config
+    );
+    dispatch({
+      type: LOAD_MENU_SUCCESS,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: LOAD_MENU_FAIL,
+    });
   }
-  return cookieValue;
-}
+};
+
+export const load_brand = (category, subcategory) => async (dispatch) => {
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+  };
+  const body = JSON.stringify({
+    category,
+    subcategory,
+  });
+  try {
+    const res = await axios.post(
+      `${process.env.REACT_APP_API_URL}/api/brand-list/`,
+      body,
+      config
+    );
+
+    dispatch({
+      type: LOAD_BRAND_SUCCESS,
+      payload: res.data,
+    });
+  } catch (err) {
+    dispatch({
+      type: LOAD_BRAND_FAIL,
+    });
+  }
+};

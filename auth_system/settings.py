@@ -124,10 +124,10 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer',
-
-    ],
+    # 'DEFAULT_RENDERER_CLASSES': [
+    #     'rest_framework.renderers.JSONRenderer',
+    #
+    # ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
 
@@ -141,8 +141,8 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=3),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
 }
 
 DJOSER = {
@@ -158,9 +158,10 @@ DJOSER = {
     'ACTIVATION_URL': 'activate/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': True,
     'SERIALIZERS': {
-        'user_create': 'accounts.serializers.UserCreateSerializer',
-        'user': 'accounts.serializers.UserCreateSerializer',
-        'user_delete': 'djoser.serializers.UserDeleteSerializer',
+        # 'user_create': 'accounts.serializers.UserCreateSerializer',
+        # 'user_create_password_retype': 'accounts.serializers.UserCreateSerializer',
+        # 'user': 'accounts.serializers.UserDetailSerializer',
+        'current_user': 'accounts.serializers.UserDetailSerializer',
     },
     'EMAIL': {
         'activation': 'accounts.email.ActivationEmail',
@@ -169,6 +170,8 @@ DJOSER = {
         'password_changed_confirmation': 'accounts.email.PasswordChangedConfirmationEmail',
         'username_changed_confirmation': 'accounts.email.UsernameChangedConfirmationEmail',
         'username_reset': 'accounts.email.UsernameResetEmail',
+        #
+        'ordered': 'shop.email.Ordered',
     },
 }
 

@@ -6,8 +6,9 @@ import {
   TextField,
   Button,
   Typography,
-  LinearProgress,
+  CircularProgress,
 } from "@material-ui/core";
+import { Done } from "@material-ui/icons";
 
 const ResetPassword = ({
   requestSuccess,
@@ -40,12 +41,12 @@ const ResetPassword = ({
   if (requestSent === requestSuccess) return <Redirect to="/" />;
 
   return (
-    <div style={{ textAlign: "center" }}>
-      {requestSent ? <LinearProgress /> : ""}
+    <div style={{ textAlign: "center", marginTop: 20 }}>
       <Typography variant="h5">درخواست بازنشانی رمز عبور</Typography>
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
         <div>
           <TextField
+            autoComplete="off"
             type="email"
             label="ایمیل"
             name="email"
@@ -59,6 +60,17 @@ const ResetPassword = ({
           variant="contained"
           color="secondary"
           type="submit"
+          startIcon={
+            requestSent ? (
+              <CircularProgress
+                size={20}
+                style={{ marginLeft: "10px" }}
+                color="inherit"
+              />
+            ) : (
+              <Done style={{ marginLeft: "10px" }} />
+            )
+          }
         >
           ارسال
         </Button>

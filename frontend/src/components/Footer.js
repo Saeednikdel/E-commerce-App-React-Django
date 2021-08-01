@@ -5,6 +5,7 @@ import {
   Divider,
   //Grid,
   makeStyles,
+  Button,
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,7 +21,16 @@ function Footer() {
     <>
       <div className={classes.container}>
         <Divider />
-        <Typography variant="h6">فوتر</Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          style={{margin:20}}
+          onClick={() => {
+            window.scrollTo({ top: 0, right: 0, behavior: "smooth" });
+          }}
+        >
+          برگشت به بالا
+        </Button>
       </div>
     </>
   );

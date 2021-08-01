@@ -27,10 +27,10 @@ const Activate = ({
     verify(uid, token);
     setRequestSent(true);
   };
-  if (requestSent === requestSuccess) return <Redirect to="/" />;
+  if (requestSent === requestSuccess) return <Redirect to="/login" />;
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ textAlign: "center", marginTop: 20 }}>
       {requestSent ? <LinearProgress /> : ""}
       <Typography variant="h5">تایید ایمیل</Typography>
       <Button

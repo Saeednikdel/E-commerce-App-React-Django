@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { set_email, resetState } from "../actions/auth";
-import { TextField, Button, LinearProgress } from "@material-ui/core";
-
+import {
+  TextField,
+  Button,
+  makeStyles,
+  CircularProgress,
+} from "@material-ui/core";
+import { Done } from "@material-ui/icons";
+const useStyles = makeStyles((theme) => ({
+  textField: { marginTop: 5, minWidth: 240 },
+  button: { marginTop: 20, marginBottom: 20, },
+}));
 const SetEmail = ({
   set_email,
   setOpenPopup,
@@ -17,6 +26,8 @@ const SetEmail = ({
   });
 
   const { new_email, re_new_email, current_password } = formData;
+  const classes = useStyles();
+
   const [requestSent, setRequestSent] = useState(false);
   useEffect(() => {
     if (requestFail) {
@@ -39,10 +50,11 @@ const SetEmail = ({
 
   return (
     <div style={{ textAlign: "center" }}>
-      {requestSent ? <LinearProgress /> : ""}
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
         <div>
           <TextField
+            className={classes.textField}
+            autoComplete="off"
             type="email"
             label="ایمیل جدید"
             name="new_email"
@@ -53,6 +65,8 @@ const SetEmail = ({
         </div>
         <div>
           <TextField
+            className={classes.textField}
+            autoComplete="off"
             type="email"
             label="تکرار ایمیل"
             name="re_new_email"
@@ -63,6 +77,8 @@ const SetEmail = ({
         </div>
         <div>
           <TextField
+            className={classes.textField}
+            autoComplete="off"
             type="password"
             label="رمز عبور"
             name="current_password"
@@ -72,10 +88,21 @@ const SetEmail = ({
           />
         </div>
         <Button
-          style={{ margin: 20 }}
+          className={classes.button}
           variant="contained"
           color="secondary"
           type="submit"
+          startIcon={
+            requestSent ? (
+              <CircularProgress
+                size={20}
+                style={{ marginLeft: "10px" }}
+                color="inherit"
+              />
+            ) : (
+              <Done style={{ marginLeft: "10px" }} />
+            )
+          }
         >
           تایید
         </Button>

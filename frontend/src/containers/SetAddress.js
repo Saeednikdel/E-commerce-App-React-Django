@@ -1,8 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { set_address, resetState } from "../actions/auth";
-import { TextField, Button, LinearProgress } from "@material-ui/core";
-
+import {
+  TextField,
+  Button,
+  makeStyles,
+  CircularProgress,
+} from "@material-ui/core";
+import { Done } from "@material-ui/icons";
+const useStyles = makeStyles((theme) => ({
+  textField: { marginTop: 5, minWidth: 240 },
+  button: { marginTop: 20, marginBottom: 20,},
+}));
 const SetAddress = ({
   set_address,
   setOpenPopup,
@@ -22,6 +31,7 @@ const SetAddress = ({
     zip_code: pzip_code,
     phone: pphone,
   });
+  const classes = useStyles();
 
   const { id, name, address, zip_code, phone } = formData;
   const [requestSent, setRequestSent] = useState(false);
@@ -45,11 +55,12 @@ const SetAddress = ({
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
-      {requestSent ? <LinearProgress /> : ""}
-      <form onSubmit={(e) => onSubmit(e)}>
-        <div style={{ marginTop: 5 }}>
+    <div>
+      <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="text"
             label="آدرس"
             name="address"
@@ -60,8 +71,10 @@ const SetAddress = ({
             required
           />
         </div>
-        <div style={{ marginTop: 5 }}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="text"
             label="نام"
             name="name"
@@ -71,8 +84,10 @@ const SetAddress = ({
             required
           />
         </div>
-        <div style={{ marginTop: 5 }}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="number"
             label="کد پستی"
             name="zip_code"
@@ -81,8 +96,10 @@ const SetAddress = ({
             required
           />
         </div>
-        <div style={{ marginTop: 5 }}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="number"
             label="تلفن"
             name="phone"
@@ -94,9 +111,20 @@ const SetAddress = ({
 
         <Button
           type="submit"
-          style={{ margin: 20 }}
+          className={classes.button}
           variant="contained"
           color="secondary"
+          startIcon={
+            requestSent ? (
+              <CircularProgress
+                size={20}
+                style={{ marginLeft: "10px" }}
+                color="inherit"
+              />
+            ) : (
+              <Done style={{ marginLeft: "10px" }} />
+            )
+          }
         >
           تایید
         </Button>

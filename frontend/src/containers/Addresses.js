@@ -45,7 +45,7 @@ const Addresses = ({ addresses, load_address, remove_address }) => {
   });
   const handleSelect = (id) => {
     setSelected(id);
-    console.log(id);
+    // console.log(id);
   };
   const handleDialog = (index) => {
     if (index === "create") {
@@ -113,7 +113,11 @@ const Addresses = ({ addresses, load_address, remove_address }) => {
           </Grid>
         ))}
       </Grid>
-      <Popup openPopup={openPopup} setOpenPopup={setOpenPopup}>
+      <Popup
+        title={"آدرس جدید"}
+        openPopup={openPopup}
+        setOpenPopup={setOpenPopup}
+      >
         <SetAddress
           pid={id}
           paddress={address}
@@ -123,6 +127,11 @@ const Addresses = ({ addresses, load_address, remove_address }) => {
           setOpenPopup={setOpenPopup}
         />
       </Popup>
+      {addresses.length < 1 && (
+        <div style={{ textAlign: "center", marginTop: 80 }}>
+          <Typography variant="h6">لیست آدرس ها خالی است.</Typography>
+        </div>
+      )}
     </div>
   ) : (
     <CircularProgress color="secondary" />

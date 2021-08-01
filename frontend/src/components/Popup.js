@@ -11,7 +11,8 @@ import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme) => ({
   dialogWrapper: {
-    padding: theme.spacing(2),
+    //padding: theme.spacing(2),
+    minWidth: 300,
     position: "absolute",
     top: theme.spacing(5),
   },
@@ -30,7 +31,7 @@ export default function Popup(props) {
       onClose={() => {
         setOpenPopup(false);
       }}
-      maxWidth="lg"
+      //maxWidth="lg"
       classes={{ paper: classes.dialogWrapper }}
     >
       <DialogTitle className={classes.dialogTitle}>

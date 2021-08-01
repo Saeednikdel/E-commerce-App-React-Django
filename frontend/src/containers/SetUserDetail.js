@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
-import { Button, TextField, LinearProgress } from "@material-ui/core";
+import {
+  Button,
+  TextField,
+  makeStyles,
+  CircularProgress,
+} from "@material-ui/core";
+import { Done } from "@material-ui/icons";
 import jMoment from "moment-jalaali";
 import JalaliUtils from "@date-io/jalaali";
 import { set_user_detail, resetState } from "../actions/auth";
 import { DatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 jMoment.loadPersian({ dialect: "persian-modern", usePersianDigits: true });
 
+const useStyles = makeStyles((theme) => ({
+  textField: { marginTop: 5, minWidth: 240 },
+  button: { marginTop: 20, marginBottom: 20, },
+}));
 const SetUserDetail = ({
   propsid,
   propsname,
@@ -29,6 +39,7 @@ const SetUserDetail = ({
     id_code: propsid_code,
   });
   const [requestSent, setRequestSent] = useState(false);
+  const classes = useStyles();
 
   const { id, name, phone_no, account_no, birth_date, id_code } = formData;
   useEffect(() => {
@@ -51,10 +62,11 @@ const SetUserDetail = ({
   };
   return (
     <div style={{ textAlign: "center" }}>
-      {requestSent ? <LinearProgress /> : ""}
-      <form onSubmit={(e) => onSubmit(e)}>
-        <div style={{ marginTop: 5 }}>
+      <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
+        <div>
           <TextField
+            className={classes.textField}
+            autoComplete="off"
             type="text"
             label="نام و نام خانوادگی"
             name="name"
@@ -63,8 +75,10 @@ const SetUserDetail = ({
             required
           />
         </div>
-        <div style={{ marginTop: 5 }}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="number"
             label="تلفن"
             name="phone_no"
@@ -73,8 +87,10 @@ const SetUserDetail = ({
             required
           />
         </div>
-        <div style={{ marginTop: 5 }}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="number"
             label="شماره کارت"
             name="account_no"
@@ -84,9 +100,10 @@ const SetUserDetail = ({
           />
         </div>
 
-        <div style={{ marginTop: 5 }}>
+        <div>
           <MuiPickersUtilsProvider utils={JalaliUtils} locale="fa">
             <DatePicker
+              className={classes.textField}
               name="birth_date"
               okLabel="تأیید"
               label="تاریخ تولد"
@@ -102,8 +119,10 @@ const SetUserDetail = ({
             />
           </MuiPickersUtilsProvider>
         </div>
-        <div style={{ marginTop: 5 }}>
+        <div>
           <TextField
+            autoComplete="off"
+            className={classes.textField}
             type="number"
             label="کد ملی"
             name="id_code"
@@ -114,9 +133,20 @@ const SetUserDetail = ({
         </div>
         <Button
           type="submit"
-          style={{ margin: 20 }}
+          className={classes.button}
           variant="contained"
           color="secondary"
+          startIcon={
+            requestSent ? (
+              <CircularProgress
+                size={20}
+                style={{ marginLeft: "10px" }}
+                color="inherit"
+              />
+            ) : (
+              <Done style={{ marginLeft: "10px" }} />
+            )
+          }
         >
           تایید
         </Button>
