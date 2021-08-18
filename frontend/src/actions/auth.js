@@ -353,12 +353,12 @@ export const login = (email, password) => async (dispatch) => {
 export const signup =
   ({ name, email, password, re_password }) =>
   async (dispatch) => {
-    const csrftoken = getCookie("csrftoken");
+    // const csrftoken = getCookie("csrftoken");
 
     const config = {
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": csrftoken,
+        // "X-CSRFToken": csrftoken,
       },
     };
 
@@ -540,18 +540,18 @@ export const logout = () => (dispatch) => {
 export const resetState = () => (dispatch) => {
   dispatch({ type: RESET_STATE });
 };
-function getCookie(name) {
-  var cookieValue = null;
-  if (document.cookie && document.cookie !== "") {
-    var cookies = document.cookie.split(";");
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
-      if (cookie.substring(0, name.length + 1) === name + "=") {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
+// function getCookie(name) {
+//   var cookieValue = null;
+//   if (document.cookie && document.cookie !== "") {
+//     var cookies = document.cookie.split(";");
+//     for (var i = 0; i < cookies.length; i++) {
+//       var cookie = cookies[i].trim();
+//       // Does this cookie string begin with the name we want?
+//       if (cookie.substring(0, name.length + 1) === name + "=") {
+//         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//         break;
+//       }
+//     }
+//   }
+//   return cookieValue;
+// }

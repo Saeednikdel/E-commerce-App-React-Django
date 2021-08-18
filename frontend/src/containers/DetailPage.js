@@ -326,10 +326,13 @@ const DetailPage = ({
             {summery ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </CardActions>
-
         <Collapse in={summery} timeout="auto" unmountOnExit>
           <CardContent>
-            <Typography paragraph>{item.description_short}</Typography>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: item.description_short,
+              }}
+            />
           </CardContent>
         </Collapse>
         <Divider />
@@ -341,9 +344,14 @@ const DetailPage = ({
             {detail ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </CardActions>
-
         <Collapse in={detail} timeout="auto" unmountOnExit>
-          <CardContent>{item.description_long}</CardContent>
+          <CardContent>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: item.description_long,
+              }}
+            />
+          </CardContent>
         </Collapse>
       </Card>
       <Card className={classes.commentContainer}>
