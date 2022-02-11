@@ -165,11 +165,13 @@ export default function (state = initialState, action) {
       };
     //
     case AUTHENTICATED_FAIL:
+      localStorage.removeItem("id");
       return {
         ...state,
         isAuthenticated: false,
       };
     case USER_LOADED_FAIL:
+      localStorage.removeItem("id");
       return {
         ...state,
         user: null,
