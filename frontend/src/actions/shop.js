@@ -21,6 +21,8 @@ import {
   LOAD_MENU_FAIL,
   LOAD_BRAND_SUCCESS,
   LOAD_BRAND_FAIL,
+  LOAD_ORDER_SUCCESS,
+  LOAD_ORDER_FAIL,
 } from "../actions/types";
 import { load_bookmark } from "./auth";
 export const load_items =
@@ -120,7 +122,7 @@ export const load_cart = () => async (dispatch) => {
     const userId = localStorage.getItem("id");
     try {
       const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/order-detail/${userId}/`,
+        `${process.env.REACT_APP_API_URL}/api/cart-detail/${userId}/`,
         config
       );
 
@@ -131,6 +133,38 @@ export const load_cart = () => async (dispatch) => {
     } catch (err) {
       dispatch({
         type: LOAD_CART_FAIL,
+      });
+    }
+  } else {
+    dispatch({
+      type: LOAD_CART_FAIL,
+    });
+  }
+};
+
+export const load_order_list = () => async (dispatch) => {
+  if (localStorage.getItem("access")) {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `JWT ${localStorage.getItem("access")}`,
+        Accept: "application/json",
+      },
+    };
+    const userId = localStorage.getItem("id");
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_API_URL}/api/order-detail/${userId}/`,
+        config
+      );
+
+      dispatch({
+        type: LOAD_ORDER_SUCCESS,
+        payload: res.data,
+      });
+    } catch (err) {
+      dispatch({
+        type: LOAD_ORDER_FAIL,
       });
     }
   } else {

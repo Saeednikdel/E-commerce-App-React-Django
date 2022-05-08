@@ -13,6 +13,8 @@ urlpatterns = [
     path('comment-list/<str:pk>/<str:sk>/', views.commentList, name="comment-list"),
     path('comment/', views.comment, name="comment"),
 
+    path('cart-detail/<str:pk>/', views.cartDetail, name="cart-detail"),
+
     path('order-detail/<str:pk>/', views.orderDetail, name="order-detail"),
 
     # path('user-detail/<str:pk>/', views.userDetail, name="user-detail"),

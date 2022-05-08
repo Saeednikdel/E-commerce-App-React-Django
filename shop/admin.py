@@ -18,8 +18,15 @@ class ColorAdmin(ImportExportModelAdmin, admin.ModelAdmin):
     list_per_page = 10
     search_fields = ('title', 'is_active')
 
+class ItemAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+    list_display = ('title', 'is_active', 'category', 'subcategory', 'brand')
+    list_editable = ('is_active',)
+    list_per_page = 10
+    search_fields = ('title', 'is_active', 'category', 'subcategory', 'brand')
+    list_filter = ('is_active', 'category', 'subcategory', 'brand')
 
-admin.site.register(Item)
+
+admin.site.register(Item, ItemAdmin)
 admin.site.register(Color, ColorAdmin)
 admin.site.register(Comment)
 admin.site.register(Bookmark)

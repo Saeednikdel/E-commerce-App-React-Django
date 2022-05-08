@@ -207,12 +207,20 @@ def userSet(request):
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
-def orderDetail(request, pk):
-    order = Order.objects.filter(user=pk)
-    items = OrderItem.objects.filter(user=pk, ordered=False)
+def cartDetail(request, pk):
+    order = Order.objects.filter(user=pk, ordered=False)
+    items = OrderItem.objects.filter(user=pk)
     for item in items:
         if item.item.stock_no < 1:
             item.delete()
+    serializer = OrderSerializer(order, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def orderDetail(request, pk):
+    order = Order.objects.filter(user=pk, ordered=True)
     serializer = OrderSerializer(order, many=True)
     return Response(serializer.data)
 
@@ -237,7 +245,7 @@ def bookmark(request):
 @permission_classes([IsAuthenticated])
 def cartAdd(request, pk):
     item = get_object_or_404(Item, id=pk)
-    user = UserAccount.objects.get(id=request.data.get('user'))
+    user = UserAccount.objects.get(id=request.data.get('user')) #buyer
     c = request.data.get('color')
     if c:
         color = Color.objects.get(id=request.data.get('color'))
@@ -260,7 +268,7 @@ def cartAdd(request, pk):
             return Response(serializer.data)
     else:
         ordered_date = timezone.now()
-        order = Order.objects.create(user=user, ordered_date=ordered_date)
+        order = Order.objects.create(user=user, seller=item.user, ordered_date=ordered_date)
         order.items.add(order_item)
         order = Order.objects.filter(seller=item.user, user=user)
         serializer = OrderSerializer(order, many=True)
