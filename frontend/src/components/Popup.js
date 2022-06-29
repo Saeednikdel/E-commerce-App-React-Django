@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -6,19 +6,20 @@ import {
   makeStyles,
   Typography,
   Button,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+} from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 
 const useStyles = makeStyles((theme) => ({
   dialogWrapper: {
-    //padding: theme.spacing(2),
     minWidth: 300,
-    position: "absolute",
+    position: 'absolute',
     top: theme.spacing(5),
   },
   dialogTitle: {
-    paddingRight: "0px",
+    paddingRight: '0px',
   },
+  title: { flexGrow: 1 },
+  titleWraper: { display: 'flex' },
 }));
 
 export default function Popup(props) {
@@ -32,19 +33,17 @@ export default function Popup(props) {
         setOpenPopup(false);
       }}
       //maxWidth="lg"
-      classes={{ paper: classes.dialogWrapper }}
-    >
+      classes={{ paper: classes.dialogWrapper }}>
       <DialogTitle className={classes.dialogTitle}>
-        <div style={{ display: "flex" }}>
-          <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
+        <div className={classes.titleWraper}>
+          <Typography variant="h6" component="div" className={classes.title}>
             {title}
           </Typography>
           <Button
             color="secondary"
             onClick={() => {
               setOpenPopup(false);
-            }}
-          >
+            }}>
             <CloseIcon />
           </Button>
         </div>

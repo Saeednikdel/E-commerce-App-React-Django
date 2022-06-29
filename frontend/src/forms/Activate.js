@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Redirect } from "react-router-dom";
-import { connect } from "react-redux";
-import { verify, resetState } from "../actions/auth";
-import { Button, Typography, LinearProgress } from "@material-ui/core";
+import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { verify, resetState } from '../actions/auth';
+import { Button, Typography, LinearProgress } from '@material-ui/core';
 
 const Activate = ({
   requestSuccess,
@@ -30,17 +30,15 @@ const Activate = ({
   if (requestSent === requestSuccess) return <Redirect to="/login" />;
 
   return (
-    <div style={{ textAlign: "center", marginTop: 20 }}>
-      {requestSent ? <LinearProgress /> : ""}
+    <div style={{ textAlign: 'center', marginTop: 20 }}>
+      {requestSent && <LinearProgress />}
       <Typography variant="h5">تایید ایمیل</Typography>
       <Button
         style={{ margin: 20 }}
         type="submit"
         variant="contained"
         color="secondary"
-        onClick={verify_account}
-        type="button"
-      >
+        onClick={verify_account}>
         تایید
       </Button>
     </div>

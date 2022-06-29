@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 ///import { Link } from "react-router-dom";
 import {
   Typography,
@@ -6,13 +6,14 @@ import {
   //Grid,
   makeStyles,
   Button,
-} from "@material-ui/core";
+} from '@material-ui/core';
 
 const useStyles = makeStyles((theme) => ({
   container: {
     minHeight: 250,
     marginTop: `${theme.spacing(2)}px`,
   },
+  btn: { margin: 20 },
 }));
 function Footer() {
   const classes = useStyles();
@@ -24,11 +25,10 @@ function Footer() {
         <Button
           variant="outlined"
           size="small"
-          style={{margin:20}}
+          className={classes.btn}
           onClick={() => {
-            window.scrollTo({ top: 0, right: 0, behavior: "smooth" });
-          }}
-        >
+            window.scrollTo({ top: 0, right: 0, behavior: 'smooth' });
+          }}>
           برگشت به بالا
         </Button>
       </div>

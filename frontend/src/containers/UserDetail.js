@@ -1,19 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Avatar,
   Typography,
   Divider,
   LinearProgress,
   Button,
-} from "@material-ui/core";
-import { connect } from "react-redux";
-import { load_user } from "../actions/auth";
-import jMoment from "moment-jalaali";
-
-import SetEmail from "../containers/SetEmail";
-import SetPassword from "../containers/SetPassword";
-import Popup from "../components/Popup";
-import SetUserDetail from "../containers/SetUserDetail";
+} from '@material-ui/core';
+import { connect } from 'react-redux';
+import { load_user } from '../actions/auth';
+import jMoment from 'moment-jalaali';
+import SetEmail from '../forms/SetEmail';
+import SetPassword from '../forms/SetPassword';
+import Popup from '../components/Popup';
+import SetUserDetail from '../forms/SetUserDetail';
 
 const UserDetail = ({ user, load_user }) => {
   useEffect(() => {
@@ -25,7 +24,7 @@ const UserDetail = ({ user, load_user }) => {
     fetchData();
   }, []);
   const [openPopup, setOpenPopup] = useState(false);
-  const [childComponent, setchildComponent] = useState("");
+  const [childComponent, setchildComponent] = useState('');
 
   const handleDialog = (btnname) => {
     setchildComponent(btnname);
@@ -34,7 +33,7 @@ const UserDetail = ({ user, load_user }) => {
 
   function ChildrenComponent({ value }) {
     switch (value) {
-      case "ویرایش مشخصات":
+      case 'ویرایش مشخصات':
         return (
           <SetUserDetail
             propsid={user.id}
@@ -46,9 +45,9 @@ const UserDetail = ({ user, load_user }) => {
             setOpenPopup={setOpenPopup}
           />
         );
-      case "تغییر ایمیل":
+      case 'تغییر ایمیل':
         return <SetEmail setOpenPopup={setOpenPopup} />;
-      case "تغییر رمز عبور":
+      case 'تغییر رمز عبور':
         return <SetPassword setOpenPopup={setOpenPopup} />;
     }
   }
@@ -58,8 +57,7 @@ const UserDetail = ({ user, load_user }) => {
         style={{ marginTop: 20, marginLeft: 20 }}
         color="secondary"
         variant="outlined"
-        onClick={() => handleDialog("ویرایش مشخصات")}
-      >
+        onClick={() => handleDialog('ویرایش مشخصات')}>
         ویرایش مشخصات
       </Button>
 
@@ -67,8 +65,7 @@ const UserDetail = ({ user, load_user }) => {
         style={{ marginLeft: 20, marginTop: 20 }}
         color="secondary"
         variant="outlined"
-        onClick={() => handleDialog("تغییر رمز عبور")}
-      >
+        onClick={() => handleDialog('تغییر رمز عبور')}>
         تغییر رمز عبور
       </Button>
 
@@ -76,8 +73,7 @@ const UserDetail = ({ user, load_user }) => {
         style={{ marginTop: 20 }}
         color="secondary"
         variant="outlined"
-        onClick={() => handleDialog("تغییر ایمیل")}
-      >
+        onClick={() => handleDialog('تغییر ایمیل')}>
         تغییر ایمیل
       </Button>
 
@@ -85,42 +81,41 @@ const UserDetail = ({ user, load_user }) => {
 
       <Typography variant="h5">ایمیل</Typography>
       <Typography variant="subtitle1">
-        {user.email ? user.email : "--"}
+        {user.email ? user.email : '--'}
       </Typography>
       <Divider />
       <Typography variant="h5">نام</Typography>
       <Typography variant="subtitle1">
-        {user.name ? user.name : "--"}
+        {user.name ? user.name : '--'}
       </Typography>
       <Divider />
       <Typography variant="h5">تلفن</Typography>
       <Typography variant="subtitle1">
-        {user.phone_no ? user.phone_no : "--"}
+        {user.phone_no ? user.phone_no : '--'}
       </Typography>
       <Divider />
       <Typography variant="h5">شماره کارت</Typography>
       <Typography variant="subtitle1">
-        {user.account_no ? user.account_no : "--"}
+        {user.account_no ? user.account_no : '--'}
       </Typography>
       <Divider />
 
       <Typography variant="h5">تاریخ تولد</Typography>
       <Typography variant="subtitle1">
         {user.birth_date
-          ? jMoment(user.birth_date, "YYYY/M/D").format("jYYYY/jM/jD")
-          : "--"}
+          ? jMoment(user.birth_date, 'YYYY/M/D').format('jYYYY/jM/jD')
+          : '--'}
       </Typography>
       <Divider />
 
       <Typography variant="h5">کد ملی</Typography>
       <Typography variant="subtitle1">
-        {user.id_code ? user.id_code : "--"}
+        {user.id_code ? user.id_code : '--'}
       </Typography>
       <Popup
         title={childComponent}
         openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-      >
+        setOpenPopup={setOpenPopup}>
         <ChildrenComponent value={childComponent} />
       </Popup>
     </div>

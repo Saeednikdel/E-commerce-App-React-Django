@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { load_address, remove_address } from "../actions/auth";
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { load_address, remove_address } from '../actions/auth';
 import {
   Grid,
   Card,
@@ -11,10 +11,10 @@ import {
   makeStyles,
   Button,
   Typography,
-} from "@material-ui/core";
-import Popup from "../components/Popup";
-import SetAddress from "../containers/SetAddress";
-import { DeleteOutline, EditRounded } from "@material-ui/icons";
+} from '@material-ui/core';
+import Popup from '../components/Popup';
+import SetAddress from '../forms/SetAddress';
+import { DeleteOutline, EditRounded } from '@material-ui/icons';
 const useStyles = makeStyles((theme) => ({
   pageContainer: {
     margin: `${theme.spacing(2)}px`,
@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
   btn: {
     marginBottom: `${theme.spacing(2)}px`,
   },
+  noItem: { textAlign: 'center', marginTop: 80 },
 }));
 
 const Addresses = ({ addresses, load_address, remove_address }) => {
@@ -37,24 +38,24 @@ const Addresses = ({ addresses, load_address, remove_address }) => {
   const [openPopup, setOpenPopup] = useState(false);
   const [selected, setSelected] = useState();
   const [formData, setFormData] = useState({
-    id: "",
-    address: "",
-    name: "",
-    zip_code: "",
-    phone: "",
+    id: '',
+    address: '',
+    name: '',
+    zip_code: '',
+    phone: '',
   });
   const handleSelect = (id) => {
     setSelected(id);
     // console.log(id);
   };
   const handleDialog = (index) => {
-    if (index === "create") {
+    if (index === 'create') {
       setFormData({
         id: 0,
-        address: "",
-        name: "",
-        zip_code: "",
-        phone: "",
+        address: '',
+        name: '',
+        zip_code: '',
+        phone: '',
       });
     } else {
       setFormData({
@@ -75,8 +76,7 @@ const Addresses = ({ addresses, load_address, remove_address }) => {
         className={classes.btn}
         color="secondary"
         variant="outlined"
-        onClick={() => handleDialog("create")}
-      >
+        onClick={() => handleDialog('create')}>
         آدرس جدید
       </Button>
       <Grid container spacing={2}>
@@ -86,11 +86,10 @@ const Addresses = ({ addresses, load_address, remove_address }) => {
               onClick={() => handleSelect(address.id)}
               style={{
                 border: `1px solid ${
-                  address.id === selected ? "#2979ff" : "rgba(0, 0, 0, 0.12)"
+                  address.id === selected ? '#2979ff' : 'rgba(0, 0, 0, 0.12)'
                 }`,
                 borderRadius: 4,
-              }}
-            >
+              }}>
               <CardContent>
                 <Typography>
                   آدرس : {address.address.substring(0, 20)}...
@@ -114,10 +113,9 @@ const Addresses = ({ addresses, load_address, remove_address }) => {
         ))}
       </Grid>
       <Popup
-        title={"آدرس جدید"}
+        title={'آدرس جدید'}
         openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-      >
+        setOpenPopup={setOpenPopup}>
         <SetAddress
           pid={id}
           paddress={address}
@@ -128,7 +126,7 @@ const Addresses = ({ addresses, load_address, remove_address }) => {
         />
       </Popup>
       {addresses.length < 1 && (
-        <div style={{ textAlign: "center", marginTop: 80 }}>
+        <div className={classes.noItem}>
           <Typography variant="h6">لیست آدرس ها خالی است.</Typography>
         </div>
       )}

@@ -13,11 +13,11 @@ import {
   AccordionDetails,
   AccordionSummary,
   Badge,
-} from "@material-ui/core";
-import React, { useState, useEffect } from "react";
-import { Link, withRouter } from "react-router-dom";
-import { connect } from "react-redux";
-import { logout } from "../actions/auth";
+} from '@material-ui/core';
+import React, { useState, useEffect } from 'react';
+import { Link, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { logout } from '../actions/auth';
 import {
   ShoppingCartOutlined,
   Brightness7,
@@ -26,19 +26,19 @@ import {
   Menu,
   ExpandMore,
   SearchSharp,
-} from "@material-ui/icons";
-import logo from "../sk.svg";
-import { load_menu } from "../actions/shop";
+} from '@material-ui/icons';
+import logo from '../sk.svg';
+import { load_menu } from '../actions/shop';
 const useStyles = makeStyles((theme) => ({
-  center: { flexGrow: 1, textAlign: "center" },
+  center: { flexGrow: 1, textAlign: 'center' },
   rightIcons: { flexGrow: 1 },
   navLink: {
-    textDecoration: "none",
-    color: "inherit",
+    textDecoration: 'none',
+    color: 'inherit',
   },
   exit: {
-    textDecoration: "none",
-    color: "inherit",
+    textDecoration: 'none',
+    color: 'inherit',
     marginTop: 10,
     marginRight: 20,
   },
@@ -46,8 +46,9 @@ const useStyles = makeStyles((theme) => ({
     width: 280,
   },
   fullList: {
-    width: "auto",
+    width: 'auto',
   },
+  searchBox: { marginTop: 5 },
 }));
 
 const Appbar = ({
@@ -79,8 +80,8 @@ const Appbar = ({
   const [drawerstate, setDrawerState] = useState(false);
   const toggleDrawer = (event) => {
     if (
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
     ) {
       return;
     }
@@ -91,19 +92,19 @@ const Appbar = ({
   const handleExpand = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const onTextChange = (e) => setSearch(e.target.value);
 
   const onSearch = (e) => {
     e.preventDefault();
     const currentUrlParams = new URLSearchParams();
-    currentUrlParams.set("keyword", search);
-    if (window.location.pathname === "/") {
+    currentUrlParams.set('keyword', search);
+    if (window.location.pathname === '/') {
       history.push(
-        window.location.pathname + "?" + currentUrlParams.toString()
+        window.location.pathname + '?' + currentUrlParams.toString()
       );
     } else {
-      window.location.replace("/?keyword=" + search);
+      window.location.replace('/?keyword=' + search);
     }
   };
   return (
@@ -134,16 +135,18 @@ const Appbar = ({
             <IconButton color="inherit">
               <Badge
                 anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
+                  vertical: 'top',
+                  horizontal: 'left',
                 }}
                 badgeContent={
                   order
-                    ? order.reduce((n, { cart_items }) => n + cart_items.length, 0)
+                    ? order.reduce(
+                        (n, { cart_items }) => n + cart_items.length,
+                        0
+                      )
                     : 0
                 }
-                color="secondary"
-              >
+                color="secondary">
                 <ShoppingCartOutlined />
               </Badge>
             </IconButton>
@@ -152,7 +155,7 @@ const Appbar = ({
         <form autoComplete="off" onSubmit={(e) => onSearch(e)}>
           <TextField
             autoComplete="off"
-            style={{ marginTop: 5 }}
+            className={classes.searchBox}
             id="search"
             placeholder="جستجو"
             color="secondary"
@@ -172,7 +175,7 @@ const Appbar = ({
       </Toolbar>
       <Divider />
 
-      <Drawer anchor={"left"} open={drawerstate} onClose={toggleDrawer}>
+      <Drawer anchor={'left'} open={drawerstate} onClose={toggleDrawer}>
         <div className={classes.list}>
           <Toolbar>
             <Link className={classes.navLink} to="/" onClick={toggleDrawer}>
@@ -185,8 +188,7 @@ const Appbar = ({
             category.map((cat) => (
               <Accordion
                 expanded={expanded === cat.title}
-                onChange={handleExpand(cat.title)}
-              >
+                onChange={handleExpand(cat.title)}>
                 <AccordionSummary expandIcon={<ExpandMore />}>
                   <Typography>{cat.title}</Typography>
                 </AccordionSummary>
@@ -196,8 +198,7 @@ const Appbar = ({
                       <Link
                         onClick={toggleDrawer}
                         className={classes.navLink}
-                        to={`/?page=1&category=${cat.title}`}
-                      >
+                        to={`/?page=1&category=${cat.title}`}>
                         <Typography>همه موارد این دسته</Typography>
                       </Link>
                     </ListItem>
@@ -206,8 +207,7 @@ const Appbar = ({
                         <Link
                           onClick={toggleDrawer}
                           className={classes.navLink}
-                          to={`/?page=1&subcategory=${sub.title}`}
-                        >
+                          to={`/?page=1&subcategory=${sub.title}`}>
                           <Typography>{sub.title}</Typography>
                         </Link>
                       </ListItem>

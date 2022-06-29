@@ -1,20 +1,20 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import Home from "./containers/Home";
-import OrderSteps from "./containers/OrderSteps";
-import Login from "./containers/Login";
-import Signup from "./containers/Signup";
-import Activate from "./containers/Activate";
-import DetailPage from "./containers/DetailPage";
-import ResetPassword from "./containers/ResetPassword";
-import ResetPasswordConfirm from "./containers/ResetPasswordConfirm";
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import Home from './containers/Home';
+import OrderSteps from './containers/OrderSteps';
+import Login from './forms/Login';
+import Signup from './forms/Signup';
+import Activate from './forms/Activate';
+import DetailPage from './containers/DetailPage';
+import ResetPassword from './forms/ResetPassword';
+import ResetPasswordConfirm from './forms/ResetPasswordConfirm';
 
-import Profile from "./containers/Profile";
-import PageNotFound from "./components/PageNotFound";
-import { Provider } from "react-redux";
-import store from "./store";
+import Profile from './containers/Profile';
+import PageNotFound from './components/PageNotFound';
+import { Provider } from 'react-redux';
+import store from './store';
 
-import Layout from "./hocs/Layout";
+import Layout from './hocs/Layout';
 
 const App = () => (
   <Provider store={store}>

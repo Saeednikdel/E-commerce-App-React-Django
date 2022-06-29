@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
-import { signup, resetState } from "../actions/auth";
+import React, { useState, useEffect } from 'react';
+import { connect } from 'react-redux';
+import { Link, Redirect } from 'react-router-dom';
+import { signup, resetState } from '../actions/auth';
 import {
   TextField,
   Button,
   makeStyles,
   Typography,
   CircularProgress,
-} from "@material-ui/core";
-import DialogAlert from "../components/DialogAlert";
-import { Done } from "@material-ui/icons";
+} from '@material-ui/core';
+import DialogAlert from '../components/DialogAlert';
+import { Done } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   navLink: {
-    textDecoration: "none",
+    textDecoration: 'none',
     color: theme.palette.secondary.light,
     margin: 5,
   },
@@ -30,30 +30,16 @@ const Signup = ({
   const [requestSent, setRequestSent] = useState(false);
   const [alert, setAlert] = useState({
     isOpen: false,
-    title: "",
-    message: "",
+    title: '',
+    message: '',
   });
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    re_password: "",
+    name: '',
+    email: '',
+    password: '',
+    re_password: '',
   });
-  // const [helperText, setHelperText] = useState({
-  //   name_helper: "",
-  //   email_helper: "",
-  //   password_helper: "",
-  //   re_password_helper: "",
-  // });
-  // const [errorList, setErrorList] = useState({
-  //   name_error: false,
-  //   email_error: false,
-  //   password_error: false,
-  //   re_password_error: false,
-  // });
   const { name, email, password, re_password } = formData;
-  // const { name_helper, email_helper, password_helper, re_password_helper } = helperText;
-  // const { name_error, email_error, password_error, re_password_error } = errorList;
   useEffect(() => {
     if (requestFail) {
       setRequestSent(false);
@@ -64,8 +50,8 @@ const Signup = ({
       setRequestSent(false);
       setAlert({
         isOpen: true,
-        title: "ثبت نام انجام شد.",
-        message: "برای فعالسازی حساب خود لینک ارسال شده به ایمیل، را باز کنید.",
+        title: 'ثبت نام انجام شد.',
+        message: 'برای فعالسازی حساب خود لینک ارسال شده به ایمیل، را باز کنید.',
       });
     }
   }, [requestFail, requestSuccess]);
@@ -83,7 +69,7 @@ const Signup = ({
 
   if (isAuthenticated) return <Redirect to="/" />;
   return (
-    <div style={{ textAlign: "center", marginTop: 20 }}>
+    <div style={{ textAlign: 'center', marginTop: 20 }}>
       <Typography variant="h5">ثبت نام</Typography>
       <form autoComplete="off" onSubmit={(e) => onSubmit(e)}>
         <div>
@@ -141,21 +127,20 @@ const Signup = ({
             requestSent ? (
               <CircularProgress
                 size={20}
-                style={{ marginLeft: "10px" }}
+                style={{ marginLeft: '10px' }}
                 color="inherit"
               />
             ) : (
-              <Done style={{ marginLeft: "10px" }} />
+              <Done style={{ marginLeft: '10px' }} />
             )
-          }
-        >
+          }>
           ایجاد حساب
         </Button>
       </form>
       <Typography variant="body1">
-        قبلا ثبت نام کرده اید؟{" "}
+        قبلا ثبت نام کرده اید؟{' '}
         <Link className={classes.navLink} to="/login">
-          ورود{" "}
+          ورود{' '}
         </Link>
       </Typography>
       <DialogAlert alert={alert} setAlert={setAlert} />

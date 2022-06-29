@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
-import { load_bookmark } from "../actions/auth";
-import { bookmark } from "../actions/shop";
+import React, { useEffect, useState } from 'react';
+import { connect } from 'react-redux';
+import { load_bookmark } from '../actions/auth';
+import { bookmark } from '../actions/shop';
 import {
   Card,
   CardActionArea,
@@ -13,21 +13,23 @@ import {
   makeStyles,
   Button,
   CircularProgress,
-} from "@material-ui/core";
-import { DeleteOutline } from "@material-ui/icons";
-import placeholderImage from "../placeholder-image.png";
-import { Rating, Pagination } from "@material-ui/lab";
+} from '@material-ui/core';
+import { DeleteOutline } from '@material-ui/icons';
+import placeholderImage from '../placeholder-image.png';
+import { Rating, Pagination } from '@material-ui/lab';
 
 const useStyles = makeStyles((theme) => ({
   pageContainer: {
     margin: `${theme.spacing(2)}px`,
   },
   paginatorDiv: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     margin: 20,
   },
+  cardContent: { height: 170 },
+  card: { maxWidth: 300 },
 }));
 const Bookmark = ({ load_bookmark, bookmarkList, bookmark }) => {
   const [page, setPage] = useState(1);
@@ -37,7 +39,7 @@ const Bookmark = ({ load_bookmark, bookmarkList, bookmark }) => {
         await load_bookmark(page);
       } catch (err) {}
     };
-    if (localStorage.getItem("id")) {
+    if (localStorage.getItem('id')) {
       fetchData();
     }
   }, []);
@@ -48,14 +50,14 @@ const Bookmark = ({ load_bookmark, bookmarkList, bookmark }) => {
   const handleChange = (event, value) => {
     setPage(value);
     load_bookmark(value);
-    window.scrollTo({ top: 0, right: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, right: 0, behavior: 'smooth' });
   };
   return bookmarkList ? (
     <div className={classes.pageContainer}>
       <Grid container spacing={1}>
         {bookmarkList.items.map((bookmark) => (
           <Grid item xs={12} sm={6} md={4} lg={3}>
-            <Card variant="outlined" style={{ maxWidth: 300 }}>
+            <Card variant="outlined" className={classes.card}>
               <CardActionArea href={`/detail/${bookmark.item}`}>
                 <CardMedia
                   component="img"
@@ -65,15 +67,14 @@ const Bookmark = ({ load_bookmark, bookmarkList, bookmark }) => {
                     e.target.src = placeholderImage;
                   }}
                 />
-                <CardContent style={{ height: 170 }}>
+                <CardContent className={classes.cardContent}>
                   <Typography variant="h6" gutterBottom>
                     {bookmark.item_title}
                   </Typography>
                   <Typography
                     color="textSecondary"
                     variant="subtitle2"
-                    gutterBottom
-                  >
+                    gutterBottom>
                     فروشنده:{bookmark.item_user}
                   </Typography>
                   {bookmark.item_discount && bookmark.item_discount > 0 ? (
@@ -87,14 +88,13 @@ const Bookmark = ({ load_bookmark, bookmarkList, bookmark }) => {
                   )}
                   <div
                     style={{
-                      position: "absolute",
+                      position: 'absolute',
                       bottom: 15,
                       left: 10,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
                     <Typography variant="body2">
                       ({bookmark.item_star.toFixed(1)})
                     </Typography>
@@ -107,8 +107,7 @@ const Bookmark = ({ load_bookmark, bookmarkList, bookmark }) => {
                   variant="outlined"
                   color="secondary"
                   size="small"
-                  onClick={() => BookmarkHandle(bookmark.item)}
-                >
+                  onClick={() => BookmarkHandle(bookmark.item)}>
                   <DeleteOutline />
                 </Button>
                 {bookmark.item_stock < 1 && (
@@ -120,7 +119,7 @@ const Bookmark = ({ load_bookmark, bookmarkList, bookmark }) => {
         ))}
       </Grid>
       {bookmarkList.items.length < 1 && (
-        <div style={{ textAlign: "center", marginTop: 120 }}>
+        <div style={{ textAlign: 'center', marginTop: 120 }}>
           <Typography variant="h6">محصولی نشان نشده است.</Typography>
         </div>
       )}

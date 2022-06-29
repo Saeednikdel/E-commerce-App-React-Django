@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   Card,
   Button,
@@ -17,29 +17,29 @@ import {
   Select,
   MenuItem,
   FormGroup,
-} from "@material-ui/core";
+} from '@material-ui/core';
 import {
   AddShoppingCart,
   BookmarkBorder,
   Bookmark,
   ExpandLess,
   ExpandMore,
-} from "@material-ui/icons";
-import { Rating, Pagination } from "@material-ui/lab";
-import Notification from "../components/Notification";
-import DialogAlert from "../components/DialogAlert";
-import SetComment from "../containers/SetComment";
-import Popup from "../components/Popup";
-import { connect } from "react-redux";
+} from '@material-ui/icons';
+import { Rating, Pagination } from '@material-ui/lab';
+import Notification from '../components/Notification';
+import DialogAlert from '../components/DialogAlert';
+import SetComment from '../forms/SetComment';
+import Popup from '../components/Popup';
+import { connect } from 'react-redux';
 import {
   load_item,
   add_to_cart,
   bookmark,
   load_comments,
-} from "../actions/shop";
-import AppCarousel from "../components/AppCarousel";
-import jMoment from "moment-jalaali";
-import Redirect from "react-router-dom/es/Redirect";
+} from '../actions/shop';
+import AppCarousel from '../components/AppCarousel';
+import jMoment from 'moment-jalaali';
+import Redirect from 'react-router-dom/es/Redirect';
 
 const useStyles = makeStyles((theme) => ({
   pageContainer: {
@@ -64,28 +64,31 @@ const useStyles = makeStyles((theme) => ({
   },
   collapseTitle: { flex: 1 },
   paginatorDiv: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     margin: 20,
   },
   emptyDiv: {
-    textAlign: "center",
+    textAlign: 'center',
     height: 600,
   },
   carousel: { height: 400 },
   off: {
-    backgroundColor: "#f44336",
+    backgroundColor: '#f44336',
     borderRadius: 15,
-    color: "#fff",
+    color: '#fff',
     paddingRight: 8,
     paddingLeft: 8,
-    display: "inline-block",
+    display: 'inline-block',
     margin: 10,
   },
   discountPrice: {
-    display: "inline-block",
+    display: 'inline-block',
   },
+  icon: { fontSize: 35 },
+  formGroup: { marginBottom: 10 },
+  menuItem: { display: 'flex', alignItems: 'center' },
 }));
 const DetailPage = ({
   item,
@@ -101,22 +104,22 @@ const DetailPage = ({
   const [openSelect, setOpenSelect] = React.useState(false);
   const [addedToCart, setAddedToCart] = React.useState(false);
   const [addToCart, setAddToCart] = React.useState(false);
-  const [color, setColor] = useState("");
+  const [color, setColor] = useState('');
   const [page, setPage] = useState(1);
   const classes = useStyles();
   const itemId = match.params.itemId;
   const [openPopup, setOpenPopup] = useState(false);
   const [alert, setAlert] = useState({
     isOpen: false,
-    title: "",
-    message: "",
-    actionUrl: "",
-    actionText: "",
+    title: '',
+    message: '',
+    actionUrl: '',
+    actionText: '',
   });
   const [notify, setNotify] = useState({
     isOpen: false,
-    message: "",
-    type: "",
+    message: '',
+    type: '',
   });
   useEffect(() => {
     load_item(itemId);
@@ -132,24 +135,24 @@ const DetailPage = ({
     } else {
       setAlert({
         isOpen: true,
-        title: "!",
-        message: "لطفا وارد شوید یا ثبت نام کنید.",
-        actionUrl: "/login",
-        actionText: "ورود",
+        title: '!',
+        message: 'لطفا وارد شوید یا ثبت نام کنید.',
+        actionUrl: '/login',
+        actionText: 'ورود',
       });
     }
   };
   const AddToCartHandle = (id) => {
     if (isAuthenticated === true) {
       if (item.colors.length > 0) {
-        if (color !== "") {
+        if (color !== '') {
           add_to_cart(id, color);
           setAddToCart(true);
         } else {
           setAlert({
             isOpen: true,
-            title: "!",
-            message: "لطفا رنگ را انتخاب کنید.",
+            title: '!',
+            message: 'لطفا رنگ را انتخاب کنید.',
           });
         }
       } else {
@@ -164,10 +167,10 @@ const DetailPage = ({
     } else {
       setAlert({
         isOpen: true,
-        title: "!",
-        message: "لطفا وارد شوید یا ثبت نام کنید.",
-        actionUrl: "/login",
-        actionText: "ورود",
+        title: '!',
+        message: 'لطفا وارد شوید یا ثبت نام کنید.',
+        actionUrl: '/login',
+        actionText: 'ورود',
       });
     }
   };
@@ -177,10 +180,10 @@ const DetailPage = ({
     } else {
       setAlert({
         isOpen: true,
-        title: "!",
-        message: "لطفا وارد شوید یا ثبت نام کنید.",
-        actionUrl: "/login",
-        actionText: "ورود",
+        title: '!',
+        message: 'لطفا وارد شوید یا ثبت نام کنید.',
+        actionUrl: '/login',
+        actionText: 'ورود',
       });
     }
   };
@@ -190,7 +193,7 @@ const DetailPage = ({
   });
   const { detail, summery } = expand;
   const handleExpandClick = (name) => {
-    if (name === "detail") {
+    if (name === 'detail') {
       setExpand({
         detail: !detail,
         summery: false,
@@ -222,12 +225,11 @@ const DetailPage = ({
             <div className={classes.summery}>
               <IconButton
                 color="secondary"
-                onClick={() => BookmarkHandle(item.id)}
-              >
+                onClick={() => BookmarkHandle(item.id)}>
                 {item.bookmarked ? (
-                  <Bookmark style={{ fontSize: 35 }} />
+                  <Bookmark className={classes.icon} />
                 ) : (
-                  <BookmarkBorder style={{ fontSize: 35 }} />
+                  <BookmarkBorder className={classes.icon} />
                 )}
               </IconButton>
               <Typography variant="h4" gutterBottom>
@@ -241,12 +243,13 @@ const DetailPage = ({
                 <div>
                   <Typography className={classes.discountPrice} variant="h5">
                     {item.discount_price.toLocaleString()}
-                    {" تومان "}
+                    {' تومان '}
                   </Typography>
                   <Typography
                     variant="h5"
-                    className={classes.off}
-                  >{`${item.discount_percent.toFixed(1)} %`}</Typography>
+                    className={classes.off}>{`${item.discount_percent.toFixed(
+                    1
+                  )} %`}</Typography>
                 </div>
               ) : (
                 <Typography variant="h5">
@@ -255,7 +258,7 @@ const DetailPage = ({
               )}
 
               {item.colors.length > 0 && (
-                <FormGroup style={{ marginBottom: 10 }}>
+                <FormGroup className={classes.formGroup}>
                   <FormControl>
                     <InputLabel>رنگ</InputLabel>
                     <Select
@@ -263,25 +266,21 @@ const DetailPage = ({
                       onClose={() => setOpenSelect(false)}
                       onOpen={() => setOpenSelect(true)}
                       value={color}
-                      onChange={handleSelectChange}
-                    >
+                      onChange={handleSelectChange}>
                       {item.colors.map((c) => (
                         <MenuItem value={c.id}>
-                          <div
-                            style={{ display: "flex", alignItems: "center" }}
-                          >
+                          <div className={classes.menuItem}>
                             <div
                               style={{
                                 backgroundColor: c.color,
-                                border: "2px solid rgba(0, 0, 0, 0.22)",
-                                borderRadius: "50%",
-                                display: "inline-block",
+                                border: '2px solid rgba(0, 0, 0, 0.22)',
+                                borderRadius: '50%',
+                                display: 'inline-block',
                                 width: 22,
                                 height: 22,
                                 marginLeft: 10,
                                 marginRight: 10,
-                              }}
-                            ></div>
+                              }}></div>
                             <Typography variant="h6">{c.title}</Typography>
                           </div>
                         </MenuItem>
@@ -301,16 +300,15 @@ const DetailPage = ({
                   addToCart ? (
                     <CircularProgress
                       size={22}
-                      style={{ marginLeft: "10px" }}
+                      style={{ marginLeft: '10px' }}
                       color="inherit"
                     />
                   ) : (
-                    <AddShoppingCart style={{ marginLeft: "10px" }} />
+                    <AddShoppingCart style={{ marginLeft: '10px' }} />
                   )
                 }
-                gutterBottom
-              >
-                {item.stock_no < 1 ? "اتمام موجودی" : "افزودن به سبد خرید"}
+                gutterBottom>
+                {item.stock_no < 1 ? 'اتمام موجودی' : 'افزودن به سبد خرید'}
               </Button>
             </div>
           </Grid>
@@ -322,7 +320,7 @@ const DetailPage = ({
           <Typography className={classes.collapseTitle} variant="h6">
             نقد و بررسی اجمالی :
           </Typography>
-          <IconButton onClick={() => handleExpandClick("summery")}>
+          <IconButton onClick={() => handleExpandClick('summery')}>
             {summery ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </CardActions>
@@ -340,7 +338,7 @@ const DetailPage = ({
           <Typography variant="h6" className={classes.collapseTitle}>
             مشخصات :
           </Typography>
-          <IconButton onClick={() => handleExpandClick("detail")}>
+          <IconButton onClick={() => handleExpandClick('detail')}>
             {detail ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
         </CardActions>
@@ -358,8 +356,7 @@ const DetailPage = ({
         <Button
           color="secondary"
           variant="outlined"
-          onClick={() => AddCommentHandle()}
-        >
+          onClick={() => AddCommentHandle()}>
           ثبت نظر
         </Button>
         <Grid container spacing={1}>
@@ -369,7 +366,7 @@ const DetailPage = ({
               <Grid item xs={12} md={6}>
                 <Card variant="outlined" className={classes.commentCard}>
                   <Typography color="textSecondary" variant="subtitle2">
-                    {jMoment(comment.date, "YYYY/M/D").format("jYYYY/jM/jD")}
+                    {jMoment(comment.date, 'YYYY/M/D').format('jYYYY/jM/jD')}
                   </Typography>
                   <Typography variant="subtitle2">
                     {comment.user_name}
@@ -395,10 +392,9 @@ const DetailPage = ({
       <Notification notify={notify} setNotify={setNotify} />
       <DialogAlert alert={alert} setAlert={setAlert} />
       <Popup
-        title={"ثبت نظر"}
+        title={'ثبت نظر'}
         openPopup={openPopup}
-        setOpenPopup={setOpenPopup}
-      >
+        setOpenPopup={setOpenPopup}>
         <SetComment id={item.id} setOpenPopup={setOpenPopup} />
       </Popup>
     </>
